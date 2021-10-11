@@ -1,0 +1,206 @@
+import json
+import os
+import shutil
+from .generator import Generator
+from .construct_sample import ConstructSample
+from .updater import Updater
+from multiprocessing import Process
+import random
+from . import model_test
+import time
+
+
+class Pipeline:
+
+    def _path_check(self):
+        if os.path.exists(self.dic_path["PATH_TO_WORK_DIRECTORY"]):
+            if self.dic_path["PATH_TO_WORK_DIRECTORY"] != "records/default":
+                raise FileExistsError
+            else:
+                pass
+        else:
+            os.makedirs(self.dic_path["PATH_TO_WORK_DIRECTORY"])
+        if os.path.exists(self.dic_path["PATH_TO_MODEL"]):
+            if self.dic_path["PATH_TO_MODEL"] != "model/default":
+                raise FileExistsError
+            else:
+                pass
+        else:
+            os.makedirs(self.dic_path["PATH_TO_MODEL"])
+
+    def _copy_conf_file(self, path=None):
+        if path is None:
+            path = self.dic_path["PATH_TO_WORK_DIRECTORY"]
+        json.dump(self.dic_agent_conf, open(os.path.join(path, "agent.conf"), "w"),
+                  indent=4)
+        json.dump(self.dic_traffic_env_conf,
+                  open(os.path.join(path, "traffic_env.conf"), "w"), indent=4)
+
+    def _copy_anon_file(self, path=None):
+        if path is None:
+            path = self.dic_path["PATH_TO_WORK_DIRECTORY"]
+        shutil.copy(os.path.join(self.dic_path["PATH_TO_DATA"], self.dic_traffic_env_conf["TRAFFIC_FILE"]),
+                        os.path.join(path, self.dic_traffic_env_conf["TRAFFIC_FILE"]))
+        shutil.copy(os.path.join(self.dic_path["PATH_TO_DATA"], self.dic_traffic_env_conf["TRAFFIC_FILE"]),
+                    os.path.join(path, self.dic_traffic_env_conf["TRAFFIC_FILE"]))
+        shutil.copy(os.path.join(self.dic_path["PATH_TO_DATA"], self.dic_traffic_env_conf["ROADNET_FILE"]),
+                    os.path.join(path, self.dic_traffic_env_conf["ROADNET_FILE"]))
+
+    def __init__(self, dic_agent_conf, dic_traffic_env_conf, dic_path):
+        self.dic_agent_conf = dic_agent_conf
+        self.dic_traffic_env_conf = dic_traffic_env_conf
+        self.dic_path = dic_path
+        # do file operations
+        self._path_check()
+        self._copy_conf_file()
+        if self.dic_traffic_env_conf["SIMULATOR_TYPE"] == 'anon':
+            self._copy_anon_file()
+        # test_duration
+        self.test_duration = []
+
+        sample_num = 10 if self.dic_traffic_env_conf["NUM_INTERSECTIONS"]>=10 else min(self.dic_traffic_env_conf["NUM_INTERSECTIONS"], 9)
+        print("sample_num for early stopping:", sample_num)
+        self.sample_inter_id = random.sample(range(self.dic_traffic_env_conf["NUM_INTERSECTIONS"]), sample_num)
+
+    def generator_wrapper(self, cnt_round, cnt_gen, dic_path, dic_agent_conf, dic_traffic_env_conf):
+        generator = Generator(cnt_round=cnt_round,
+                              cnt_gen=cnt_gen,
+                              dic_path=dic_path,
+                              dic_agent_conf=dic_agent_conf,
+                              dic_traffic_env_conf=dic_traffic_env_conf,
+                              )
+        print("make generator")
+        generator.generate()
+        print("generator_wrapper end")
+        return
+
+    def updater_wrapper(self, cnt_round, dic_agent_conf, dic_traffic_env_conf, dic_path):
+
+        updater = Updater(
+            cnt_round=cnt_round,
+            dic_agent_conf=dic_agent_conf,
+            dic_traffic_env_conf=dic_traffic_env_conf,
+            dic_path=dic_path
+        )
+        updater.load_sample_for_agents()
+        updater.update_network_for_agents()
+        print("updater_wrapper end")
+        return
+
+    def construct_sample_multi_process(self, train_round, cnt_round, batch_size=200):
+        cs = ConstructSample(path_to_samples=train_round, cnt_round=cnt_round,
+                             dic_traffic_env_conf=self.dic_traffic_env_conf)
+        if batch_size > self.dic_traffic_env_conf['NUM_INTERSECTIONS']:
+            batch_size_run = self.dic_traffic_env_conf['NUM_INTERSECTIONS']
+        else:
+            batch_size_run = batch_size
+        process_list = []
+        for batch in range(0, self.dic_traffic_env_conf['NUM_INTERSECTIONS'], batch_size_run):
+            start = batch
+            stop = min(batch + batch_size, self.dic_traffic_env_conf['NUM_INTERSECTIONS'])
+            process_list.append(Process(target=self.construct_sample_batch, args=(cs, start, stop)))
+
+        for t in process_list:
+            t.start()
+        for t in process_list:
+            t.join()
+
+    def construct_sample_batch(self, cs, start,stop):
+        for inter_id in range(start, stop):
+            print("make construct_sample_wrapper for ", inter_id)
+            cs.make_reward(inter_id)
+
+    def run(self, multi_process=False):
+        f_time = open(os.path.join(self.dic_path["PATH_TO_WORK_DIRECTORY"], "running_time.csv"), "w")
+        f_time.write("generator_time\tmaking_samples_time\tupdate_network_time\ttest_evaluation_times\tall_times\n")
+        f_time.close()
+        for cnt_round in range(self.dic_traffic_env_conf["NUM_ROUNDS"]):
+            print("round %d starts" % cnt_round)
+            round_start_time = time.time()
+            process_list = []
+
+            print("==============  generator =============")
+            generator_start_time = time.time()
+            if multi_process:
+                print("-------------- use multi-process for generator -------------")
+                for cnt_gen in range(self.dic_traffic_env_conf["NUM_GENERATORS"]):
+                    p = Process(target=self.generator_wrapper,
+                                args=(cnt_round, cnt_gen, self.dic_path,
+                                      self.dic_agent_conf, self.dic_traffic_env_conf)
+                                )
+                    print("before")
+                    p.start()
+                    print("end")
+                    process_list.append(p)
+                print("before join")
+                for i in range(len(process_list)):
+                    p = process_list[i]
+                    print("generator %d to join" % i)
+                    p.join()
+                    print("generator %d finish join" % i)
+                print("end join")
+            else:
+                for cnt_gen in range(self.dic_traffic_env_conf["NUM_GENERATORS"]):
+                    self.generator_wrapper(cnt_round=cnt_round,
+                                           cnt_gen=cnt_gen,
+                                           dic_path=self.dic_path,
+                                           dic_agent_conf=self.dic_agent_conf,
+                                           dic_traffic_env_conf=self.dic_traffic_env_conf)
+            generator_end_time = time.time()
+            generator_total_time = generator_end_time - generator_start_time
+
+            print("==============  make samples =============")
+            # make samples and determine which samples are good
+            making_samples_start_time = time.time()
+            train_round = os.path.join(self.dic_path["PATH_TO_WORK_DIRECTORY"], "train_round")
+            if not os.path.exists(train_round):
+                os.makedirs(train_round)
+            cs = ConstructSample(path_to_samples=train_round, cnt_round=cnt_round,
+                                 dic_traffic_env_conf=self.dic_traffic_env_conf)
+            cs.make_reward_for_system()
+            making_samples_end_time = time.time()
+            making_samples_total_time = making_samples_end_time - making_samples_start_time
+
+            print("==============  update network =============")
+            update_network_start_time = time.time()
+            if self.dic_traffic_env_conf["MODEL_NAME"] in self.dic_traffic_env_conf["LIST_MODEL_NEED_TO_UPDATE"]:
+                if multi_process:
+                    p = Process(target=self.updater_wrapper,
+                                args=(cnt_round,
+                                      self.dic_agent_conf,
+                                      self.dic_traffic_env_conf,
+                                      self.dic_path))
+                    p.start()
+                    print("update to join")
+                    p.join()
+                    print("update finish join")
+                else:
+                    self.updater_wrapper(cnt_round=cnt_round,
+                                         dic_agent_conf=self.dic_agent_conf,
+                                         dic_traffic_env_conf=self.dic_traffic_env_conf,
+                                         dic_path=self.dic_path)
+
+            update_network_end_time = time.time()
+            update_network_total_time = update_network_end_time - update_network_start_time
+
+            print("==============  test evaluation =============")
+            test_evaluation_start_time = time.time()
+            model_test.test(self.dic_path["PATH_TO_MODEL"], cnt_round,
+                            self.dic_traffic_env_conf["RUN_COUNTS"], self.dic_traffic_env_conf)
+
+            test_evaluation_end_time = time.time()
+            test_evaluation_total_time = test_evaluation_end_time - test_evaluation_start_time
+
+            print("Generator time: ", generator_total_time)
+            print("Making samples time:", making_samples_total_time)
+            print("update_network time:", update_network_total_time)
+            print("test_evaluation time:", test_evaluation_total_time)
+
+            print("round {0} ends, total_time: {1}".format(cnt_round, time.time()-round_start_time))
+            f_time = open(os.path.join(self.dic_path["PATH_TO_WORK_DIRECTORY"], "running_time.csv"),"a")
+            f_time.write("{0}\t{1}\t{2}\t{3}\t{4}\n".format(generator_total_time, making_samples_total_time,
+                                                            update_network_total_time, test_evaluation_total_time,
+                                                            time.time()-round_start_time))
+            f_time.close()
+
+
