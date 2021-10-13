@@ -9,8 +9,8 @@ import os
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-memo",       type=str,           default='benchmark_1001')
-    parser.add_argument("-mod",        type=str,           default="Colight")
-    parser.add_argument("-eightphase",  action="store_true", default=True)
+    parser.add_argument("-mod",        type=str,           default="AdvancedColight")
+    parser.add_argument("-eightphase",  action="store_true", default=False)
     parser.add_argument("-gen",        type=int,            default=1)
     parser.add_argument("-multi_process", action="store_true", default=True)
     parser.add_argument("-workers",    type=int,            default=3)
@@ -28,7 +28,7 @@ def main(in_args=None):
         num_rounds = 80
         template = "Hangzhou"
     elif in_args.jinan:
-        count = 60
+        count = 3600
         road_net = "3_4"
         traffic_file_list = ["anon_3_4_jinan_real.json", "anon_3_4_jinan_real_2000.json",
                              "anon_3_4_jinan_real_2500.json"]
@@ -48,22 +48,22 @@ def main(in_args=None):
         deploy_dic_agent_conf = merge(getattr(config, "DIC_BASE_AGENT_CONF"), dic_agent_conf_extra)
 
         dic_traffic_env_conf_extra = {
+            "OBS_LENGTH": 150,
+
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,
             "NUM_AGENTS": 1,
             "NUM_INTERSECTIONS": num_intersections,
             "RUN_COUNTS": count,
-
             "MODEL_NAME": in_args.mod,
             "NUM_ROW": NUM_ROW,
             "NUM_COL": NUM_COL,
             "TRAFFIC_FILE": traffic_file,
-
             "ROADNET_FILE": "roadnet_{0}.json".format(road_net),
-
             "LIST_STATE_FEATURE": [
                 "cur_phase",
-                "lane_num_vehicle",
+                "traffic_movement_pressure_queue_efficient",
+                "lane_enter_running_part",
                 "adjacency_matrix",
             ],
 
@@ -71,7 +71,6 @@ def main(in_args=None):
                 "queue_length": -0.25,
             },
         }
-
         if in_args.eightphase:
             dic_traffic_env_conf_extra["PHASE"] = {
                 1: [0, 1, 0, 1, 0, 0, 0, 0],

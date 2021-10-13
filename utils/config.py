@@ -7,6 +7,8 @@ from models.presslight_one import PressLightAgentOne
 from models.ep_presslight_one import EPressLightAgentOne
 from models.ep_presslight import EPressLightAgent
 from models.presslight import PressLightAgent
+from models.ad_mplight_agent import AdvancedMPLightAgent
+from models.ad_colight_agent import AdvancedCoLightAgent
 
 
 DIC_AGENTS = {
@@ -19,6 +21,8 @@ DIC_AGENTS = {
     "EPressLightOne": EPressLightAgentOne,
     "Colight": CoLightAgent,
     "MPLight": MPLightAgent,
+    "AdvancedMPLight": AdvancedMPLightAgent,
+    "AdvancedColight": AdvancedCoLightAgent,
 }
 
 DIC_PATH = {
@@ -32,8 +36,9 @@ DIC_PATH = {
 dic_traffic_env_conf = {
 
     "LIST_MODEL": ["Fixedtime",  "MaxPressure", "MPLight", "Colight", "PressLight", "PressLightOne",
-                   "EfficientPressure", "EPressLight", "EPressLightOne"],
-    "LIST_MODEL_NEED_TO_UPDATE": ["MPLight", "Colight", "PressLight", "PressLightOne", "EPressLight", "EPressLightOne"],
+                   "EfficientPressure", "EPressLight", "EPressLightOne", "AdvancedMPLight", "AdvancedColight"],
+    "LIST_MODEL_NEED_TO_UPDATE": ["MPLight", "Colight", "PressLight", "PressLightOne", "EPressLight", "EPressLightOne",
+                                  "AdvancedMPLight", "AdvancedColight"],
 
     "FORGET_ROUND": 20,
     "RUN_COUNTS": 3600,

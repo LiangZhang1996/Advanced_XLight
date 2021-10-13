@@ -235,3 +235,22 @@ def relation(x, phase_list):
     constant = K.constant(relations)
     constant = K.tile(constant, (batch_size, 1, 1))
     return constant
+
+
+class RepeatVector3D(Layer):
+    def __init__(self, times, **kwargs):
+        super(RepeatVector3D, self).__init__(**kwargs)
+        self.times = times
+
+    def compute_output_shape(self, input_shape):
+        return input_shape[0], self.times, input_shape[1], input_shape[2]
+
+    def call(self, inputs):
+        # [batch,agent,dim]->[batch,1,agent,dim]
+        # [batch,1,agent,dim]->[batch,agent,agent,dim]
+        return K.tile(K.expand_dims(inputs, 1), [1, self.times, 1, 1])
+
+    def get_config(self):
+        config = {'times': self.times}
+        base_config = super(RepeatVector3D, self).get_config()
+        return dict(list(base_config.items()) + list(config.items()))

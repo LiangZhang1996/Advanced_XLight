@@ -73,7 +73,7 @@ class Updater:
     def load_sample_for_agents(self):
         start_time = time.time()
         print("Start load samples at", start_time)
-        if self.dic_traffic_env_conf['MODEL_NAME'] in ["EPressLightOne", "PressLightOne", "MPLight"]:
+        if self.dic_traffic_env_conf['MODEL_NAME'] in ["EPressLightOne", "PressLightOne", "MPLight", "AdvancedMPLight"]:
             sample_set_all = []
             for i in range(self.dic_traffic_env_conf['NUM_INTERSECTIONS']):
                 sample_set = self.load_sample_with_forget(i)
@@ -83,7 +83,7 @@ class Updater:
             for i in range(self.dic_traffic_env_conf['NUM_INTERSECTIONS']):
                 sample_set = self.load_sample_with_forget(i)
                 self.agents[i].prepare_Xs_Y(sample_set)
-        elif self.dic_traffic_env_conf['MODEL_NAME'] in ["Colight"]:
+        elif self.dic_traffic_env_conf['MODEL_NAME'] in ["Colight", "AdvancedColight"]:
             samples_list = []
             for i in range(self.dic_traffic_env_conf['NUM_INTERSECTIONS']):
                 sample_set = self.load_sample_with_forget(i)
