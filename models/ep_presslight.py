@@ -1,9 +1,8 @@
 """
-PressLight agent, based on LIT model structure.
-Observations: [cur_phase, lane_num_vechile_in, lane_num_vehicle_out]
+EP-PressLight agent, based on LIT model structure.
+Observations: [cur_phase, traffic_movement_pressure_queue_efficient]
 Reward: -Pressure
 """
-
 from .network_agent import NetworkAgent, Selector
 from tensorflow.keras.layers import Dense, concatenate, Add, Multiply
 from tensorflow.keras import Input, Model
@@ -12,15 +11,14 @@ import numpy as np
 import random
 
 
-class PressLightAgent(NetworkAgent):
+class EPressLightAgent(NetworkAgent):
     def build_network(self):
         dic_input_node = {"feat1": Input(shape=(8,), name="input_cur_phase"),
-                          "feat2": Input(shape=(12,), name="input_feat2"),
-                          "feat3": Input(shape=(12,), name="input_feat3")}
+                          "feat2": Input(shape=(12,), name="input_feat2")}
 
         # concatenate features
         list_all_flatten_feature = []
-        for feature_name in ["feat1", "feat2", "feat3"]:
+        for feature_name in ["feat1", "feat2"]:
             list_all_flatten_feature.append(dic_input_node[feature_name])
         all_flatten_feature = concatenate(list_all_flatten_feature, axis=1, name="all_flatten_feature")
 
@@ -48,7 +46,7 @@ class PressLightAgent(NetworkAgent):
         q_values = Add()(list_selected_q_values)
 
         network = Model(inputs=[dic_input_node[feature_name]
-                                for feature_name in ["feat1", "feat2", "feat3"]],
+                                for feature_name in ["feat1", "feat2"]],
                         outputs=q_values)
         network.compile(optimizer=Adam(lr=self.dic_agent_conf["LEARNING_RATE"]),
                         loss="mean_squared_error")
@@ -81,9 +79,9 @@ class PressLightAgent(NetworkAgent):
         print("memory samples number:", sample_size)
 
         # used_feature = ["phase_2", "phase_num_vehicle"]
-        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:3]
-        _state = [[], [], []]
-        _next_state = [[], [], []]
+        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:2]
+        _state = [[], []]
+        _next_state = [[], []]
         _action = []
         _reward = []
         for i in range(len(sample_slice)):

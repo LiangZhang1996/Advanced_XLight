@@ -69,6 +69,16 @@ def main(in_args=None):
             "DIC_REWARD_INFO": {
                 "pressure": -0.25,
             },
+            "PHASE": {
+                "anon": {
+                    1: [0, 1, 0, 1, 0, 0, 0, 0],  # 'WSES',
+                    2: [0, 0, 0, 0, 0, 1, 0, 1],  # 'NSSS',
+                    3: [1, 0, 1, 0, 0, 0, 0, 0],  # 'WLEL',
+                    4: [0, 0, 0, 0, 1, 0, 1, 0]  # 'NLSL',
+                },
+            },
+            "list_lane_order": ["WL", "WT", "EL", "ET", "NL", "NT", "SL", "ST"],
+            "PHASE_LIST": ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL'],
         }
 
         if in_args.eightphase:

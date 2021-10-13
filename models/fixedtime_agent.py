@@ -1,3 +1,8 @@
+"""
+Fixed-Time agent.
+Use pre-assigned time duration for each phase.
+"""
+
 from .agent import Agent
 
 

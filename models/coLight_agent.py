@@ -1,3 +1,8 @@
+"""
+Colgiht agent.
+observations: [lane_num_vehicle, cur_phase]
+reward: -queue_length
+"""
 import numpy as np
 import os
 from .agent import Agent

@@ -1,8 +1,11 @@
 from models.fixedtime_agent import FixedtimeAgent
 from models.maxpressure_agent import MaxPressureAgent
+from models.efficientpressure_agent import EfficientPressureAgent
 from models.mplight_agent import MPLightAgent
 from models.coLight_agent import CoLightAgent
 from models.presslight_one import PressLightAgentOne
+from models.ep_presslight_one import EPressLightAgentOne
+from models.ep_presslight import EPressLightAgent
 from models.presslight import PressLightAgent
 from .anon_env import AnonEnv
 
@@ -10,8 +13,11 @@ from .anon_env import AnonEnv
 DIC_AGENTS = {
     "Fixedtime": FixedtimeAgent,
     "MaxPressure": MaxPressureAgent,
+    "EfficientPressure": EfficientPressureAgent,
     "PressLight": PressLightAgent,
+    "EPressLight": EPressLightAgent,
     "PressLightOne": PressLightAgentOne,
+    "EPressLightOne": EPressLightAgentOne,
     "Colight": CoLightAgent,
     "MPLight": MPLightAgent,
 }
@@ -122,6 +128,44 @@ DIC_PRESSLIGHT_AGENT_CONF = {
     "NORMAL_FACTOR": 20,
 }
 
+DIC_EPRESSLIGHT_AGENT_CONF = {
+    "LEARNING_RATE": 0.001,
+    "SAMPLE_SIZE": 3000,
+    "BATCH_SIZE": 20,
+    "EPOCHS": 100,
+    "UPDATE_Q_BAR_FREQ": 5,
+    "UPDATE_Q_BAR_EVERY_C_ROUND": False,
+    "GAMMA": 0.8,
+    "MAX_MEMORY_LEN": 12000,
+    "PATIENCE": 10,
+    "D_DENSE": 20,
+    "N_LAYER": 2,
+    "EPSILON": 0.8,
+    "EPSILON_DECAY": 0.95,
+    "MIN_EPSILON": 0.2,
+    "LOSS_FUNCTION": "mean_squared_error",
+    "NORMAL_FACTOR": 20,
+}
+
+DIC_EPRESSLIGHTONE_AGENT_CONF = {
+    "LEARNING_RATE": 0.001,
+    "SAMPLE_SIZE": 3000,
+    "BATCH_SIZE": 20,
+    "EPOCHS": 100,
+    "UPDATE_Q_BAR_FREQ": 5,
+    "UPDATE_Q_BAR_EVERY_C_ROUND": False,
+    "GAMMA": 0.8,
+    "MAX_MEMORY_LEN": 12000,
+    "PATIENCE": 10,
+    "D_DENSE": 20,
+    "N_LAYER": 2,
+    "EPSILON": 0.8,
+    "EPSILON_DECAY": 0.95,
+    "MIN_EPSILON": 0.2,
+    "LOSS_FUNCTION": "mean_squared_error",
+    "NORMAL_FACTOR": 20,
+    "TRAFFIC_FILE": None,
+}
 
 DIC_PRESSLIGHTONE_AGENT_CONF = {
     "LEARNING_RATE": 0.001,

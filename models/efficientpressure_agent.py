@@ -1,19 +1,18 @@
 """
-Max-Pressure agent.
-observation: [traffic_movement_pressure_queue].
+Efficient-Pressure agent.
+observation: [ traffic_movement_pressure_queue_efficient].
 Action: use greedy method select the phase with max value.
 """
 
 from .agent import Agent
-
 import numpy as np
 
 
-class MaxPressureAgent(Agent):
+class EfficientPressureAgent(Agent):
 
     def __init__(self, dic_agent_conf, dic_traffic_env_conf, dic_path, cnt_round, intersection_id):
 
-        super(MaxPressureAgent, self).__init__(dic_agent_conf, dic_traffic_env_conf, dic_path, intersection_id)
+        super(EfficientPressureAgent, self).__init__(dic_agent_conf, dic_traffic_env_conf, dic_path, intersection_id)
 
         self.current_phase_time = 0
         self.phase_length = len(self.dic_traffic_env_conf["PHASE"][self.dic_traffic_env_conf["SIMULATOR_TYPE"]])
@@ -49,7 +48,7 @@ class MaxPressureAgent(Agent):
             return self.action
 
         #  WT_ET
-        tr_mo_pr = np.array(state["traffic_movement_pressure_queue"])
+        tr_mo_pr = np.array(state["traffic_movement_pressure_queue_efficient"])
         phase_1 = tr_mo_pr[1] + tr_mo_pr[4]
         # NT_ST
         phase_2 = tr_mo_pr[7] + tr_mo_pr[10]
@@ -59,7 +58,6 @@ class MaxPressureAgent(Agent):
         phase_4 = tr_mo_pr[6] + tr_mo_pr[9]
 
         if self.phase_length == 4:
-
             self.action = np.argmax([phase_1, phase_2, phase_3, phase_4])
         elif self.phase_length == 8:
             #  WL_WT

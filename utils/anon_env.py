@@ -234,7 +234,7 @@ class Intersection:
         dic_feature["lane_num_waiting_vehicle_out"] = self._get_lane_queue_length(self.list_exiting_lanes)
 
         dic_feature["traffic_movement_pressure_queue"] = self._get_traffic_movement_pressure_queue()
-        dic_feature["traffic_movement_pressure_queue_adjusted"] = self._get_traffic_movement_pressure_queue_adjusted()
+        dic_feature["traffic_movement_pressure_queue_efficient"] = self._get_traffic_movement_pressure_queue_efficient()
         dic_feature["traffic_movement_pressure_num"] = self._get_traffic_movement_pressure_num(dic_feature["lane_num_vehicle"],
                                                                                                dic_feature["lane_num_vehicle_downstream"])
         dic_feature["pressure"] = self._get_pressure()
@@ -301,7 +301,7 @@ class Intersection:
         t_m_p = [enterings[j] - outs_maps[turn_maps[j]] for j in range(12)]
         return t_m_p
 
-    def _get_traffic_movement_pressure_queue_adjusted(self):
+    def _get_traffic_movement_pressure_queue_efficient(self):
         """
         A fixed version of traffic_movement_pressure,
         This is the feature that used in our article.

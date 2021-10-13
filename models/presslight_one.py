@@ -1,3 +1,10 @@
+"""
+PressLight agent, based on LIT model structure.
+"One" means parameter sharing, Ape-X solution.
+Observations: [cur_phase, lane_num_vechile_in, lane_num_vehicle_out]
+Reward: -Pressure
+"""
+
 from .network_agent import NetworkAgent, Selector
 from tensorflow.keras.layers import Dense, concatenate, Add, Multiply
 from tensorflow.keras import Input, Model
@@ -17,7 +24,7 @@ class PressLightAgentOne(NetworkAgent):
             list_all_flatten_feature.append(dic_input_node[feature_name])
         all_flatten_feature = concatenate(list_all_flatten_feature, axis=1, name="all_flatten_feature")
         # shared dense layer
-        shared_dense = Dense(self.dic_agent_conf["D_DENSE"], activation="relu",
+        shared_dense = Dense(self.dic_agent_conf["D_DENSE"], activation="sigmoid",
                              name="shared_hidden")(all_flatten_feature)
 
         # build phase selector layer

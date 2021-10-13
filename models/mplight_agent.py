@@ -1,3 +1,9 @@
+"""
+MPLight agent, based on FRAP model structure.
+Observations: [cur_phase, traffic_movement_pressure_num]
+Reward: -Pressure
+"""
+
 from tensorflow.keras.layers import Input, Dense, Reshape,  Lambda,  Activation, Embedding, Conv2D, concatenate, add,\
     multiply
 from tensorflow.keras.models import Model
