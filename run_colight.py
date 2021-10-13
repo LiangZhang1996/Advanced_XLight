@@ -24,7 +24,7 @@ def main(in_args=None):
         lane = [3, 3, 3, 3]
         count = 3600
         road_net = "4_4"
-        traffic_file_list = ["anon_4_4_hangzhou_real.json", "anon_4_4_hangzhou_real_5734.json",
+        traffic_file_list = ["anon_4_4_hangzhou_real.json",
                              "anon_4_4_hangzhou_real_5816.json"]
         num_rounds = 80
         template = "Hangzhou"
@@ -34,7 +34,7 @@ def main(in_args=None):
         road_net = "3_4"
         traffic_file_list = ["anon_3_4_jinan_real.json", "anon_3_4_jinan_real_2000.json",
                              "anon_3_4_jinan_real_2500.json"]
-        num_rounds = 2
+        num_rounds = 80
         template = "Jinan"
 
     NUM_COL = int(road_net.split('_')[1])
@@ -69,29 +69,31 @@ def main(in_args=None):
             "DIC_REWARD_INFO": {
                 "queue_length": -0.25,
             },
+            "PHASE": {
+                "anon": {
+                    1: [0, 1, 0, 1, 0, 0, 0, 0],  # 'WSES',
+                    2: [0, 0, 0, 0, 0, 1, 0, 1],  # 'NSSS',
+                    3: [1, 0, 1, 0, 0, 0, 0, 0],  # 'WLEL',
+                    4: [0, 0, 0, 0, 1, 0, 1, 0]  # 'NLSL',
+                },
+            },
+            "list_lane_order": ["WL", "WT", "EL", "ET", "NL", "NT", "SL", "ST"],
+            "PHASE_LIST": ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL'],
         }
 
         if in_args.eightphase:
             dic_traffic_env_conf_extra["PHASE"]["anon"] = {
-                    1: [0, 1, 0, 1, 0, 0, 0, 0],  # 'WSES',
-                    2: [0, 0, 0, 0, 0, 1, 0, 1],  # 'NSSS',
-                    3: [1, 0, 1, 0, 0, 0, 0, 0],  # 'WLEL',
-                    4: [0, 0, 0, 0, 1, 0, 1, 0],  # 'NLSL',
-                    5: [1, 1, 0, 0, 0, 0, 0, 0],  # 'WL_WS'
-                    6: [0, 0, 1, 1, 0, 0, 0, 0],  # 'EL_ES'
-                    7: [0, 0, 0, 0, 0, 0, 1, 1],  # 'SL_SS'
-                    8: [0, 0, 0, 0, 1, 1, 0, 0]   # 'NLNS'
-                }
-            dic_traffic_env_conf_extra["PHASE_LIST"] = [
-                'WT_ET',
-                'NT_ST',
-                'WL_EL',
-                'NL_SL',
-                'WL_WT',
-                'EL_ET',
-                'SL_ST',
-                'NL_NT',
-            ]
+                1: [0, 1, 0, 1, 0, 0, 0, 0],
+                2: [0, 0, 0, 0, 0, 1, 0, 1],
+                3: [1, 0, 1, 0, 0, 0, 0, 0],
+                4: [0, 0, 0, 0, 1, 0, 1, 0],
+                5: [1, 1, 0, 0, 0, 0, 0, 0],
+                6: [0, 0, 1, 1, 0, 0, 0, 0],
+                7: [0, 0, 0, 0, 0, 0, 1, 1],
+                8: [0, 0, 0, 0, 1, 1, 0, 0]
+            }
+            dic_traffic_env_conf_extra["PHASE_LIST"] = ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL',
+                                                        'WL_WT', 'EL_ET', 'SL_ST', 'NL_NT']
         dic_path_extra = {
             "PATH_TO_MODEL": os.path.join("model", in_args.memo, traffic_file + "_" +
                                           time.strftime('%m_%d_%H_%M_%S', time.localtime(time.time()))),

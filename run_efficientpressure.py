@@ -8,7 +8,7 @@ import argparse
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--memo",       type=str,               default='benchmark_1001')
-    parser.add_argument("-model",       type=str,               default="MaxPressure")
+    parser.add_argument("-model",       type=str,               default="EfficientPressure")
     parser.add_argument("-eightphase", action="store_true",     default=False)
     parser.add_argument("-multi_process", action="store_true",  default=True)
     parser.add_argument("-workers",     type=int,               default=3)
@@ -59,7 +59,7 @@ def main(in_args):
 
             "LIST_STATE_FEATURE": [
                 "cur_phase",
-                "traffic_movement_pressure_queue_adjusted",
+                "traffic_movement_pressure_queue_efficient",
             ],
 
             "DIC_REWARD_INFO": {

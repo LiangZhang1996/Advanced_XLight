@@ -63,25 +63,35 @@ def main(in_args=None):
             "TRAFFIC_SEPARATE": traffic_file,
             "LIST_STATE_FEATURE": [
                 "cur_phase",
-                "traffic_movement_pressure_num",
+                "traffic_movement_pressure_queue_efficient",
             ],
 
             "DIC_REWARD_INFO": {
                 "pressure": -0.25,
             },
+            "PHASE": {
+                "anon": {
+                    1: [0, 1, 0, 1, 0, 0, 0, 0],  # 'WSES',
+                    2: [0, 0, 0, 0, 0, 1, 0, 1],  # 'NSSS',
+                    3: [1, 0, 1, 0, 0, 0, 0, 0],  # 'WLEL',
+                    4: [0, 0, 0, 0, 1, 0, 1, 0]  # 'NLSL',
+                },
+            },
+            "list_lane_order": ["WL", "WT", "EL", "ET", "NL", "NT", "SL", "ST"],
+            "PHASE_LIST": ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL'],
         }
 
         if in_args.eightphase:
             dic_traffic_env_conf_extra["PHASE"]["anon"] = {
-                1: [0, 1, 0, 1, 0, 0, 0, 0],
-                2: [0, 0, 0, 0, 0, 1, 0, 1],
-                3: [1, 0, 1, 0, 0, 0, 0, 0],
-                4: [0, 0, 0, 0, 1, 0, 1, 0],
-                5: [1, 1, 0, 0, 0, 0, 0, 0],
-                6: [0, 0, 1, 1, 0, 0, 0, 0],
-                7: [0, 0, 0, 0, 0, 0, 1, 1],
-                8: [0, 0, 0, 0, 1, 1, 0, 0]
-            }
+                    1: [0, 1, 0, 1, 0, 0, 0, 0],
+                    2: [0, 0, 0, 0, 0, 1, 0, 1],
+                    3: [1, 0, 1, 0, 0, 0, 0, 0],
+                    4: [0, 0, 0, 0, 1, 0, 1, 0],
+                    5: [1, 1, 0, 0, 0, 0, 0, 0],
+                    6: [0, 0, 1, 1, 0, 0, 0, 0],
+                    7: [0, 0, 0, 0, 0, 0, 1, 1],
+                    8: [0, 0, 0, 0, 1, 1, 0, 0]
+                }
             dic_traffic_env_conf_extra["PHASE_LIST"] = ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL',
                                                         'WL_WT', 'EL_ET', 'SL_ST', 'NL_NT']
 
