@@ -52,15 +52,8 @@ class ConstructSample:
             return 0, None
 
     def load_data_for_system(self, folder):
-        """
-        Load data for all intersections in one folder
-        :param folder:
-        :return: a list of logging data of one intersection for one folder
-        """
         self.logging_data_list_per_gen = []
-        # load settings
         print("Load data for system in ", folder)
-
         for i in range(self.dic_traffic_env_conf['NUM_INTERSECTIONS']):
             pass_code, logging_data = self.load_data(folder, i)
             if pass_code == 0:
@@ -76,7 +69,7 @@ class ConstructSample:
             for key, value in state["state"].items():
                 if key in features:
                     if "cur_phase" in key:
-                        state_after_selection[key] = self.dic_traffic_env_conf['PHASE'][self.dic_traffic_env_conf['SIMULATOR_TYPE']][value[0]]
+                        state_after_selection[key] = self.dic_traffic_env_conf['PHASE'][value[0]]
                     else:
                         state_after_selection[key] = value
         else:
@@ -84,7 +77,6 @@ class ConstructSample:
         return state_after_selection
 
     def construct_reward(self, rewards_components, time, i):
-
         rs = self.logging_data_list_per_gen[i][time + self.measure_time - 1]
         assert time + self.measure_time - 1 == rs["time"]
         rs = get_reward_from_features(rs['state'])
@@ -108,23 +100,13 @@ class ConstructSample:
             return self.logging_data_list_per_gen[i][time]['action']
 
     def make_reward(self, folder, i):
-        """
-        make reward for one folder and one intersection,
-        add the samples of one intersection into the list.samples_all_intersection[i]
-        :param i: intersection id
-        :return:
-        """
         if self.samples_all_intersection[i] is None:
             self.samples_all_intersection[i] = []
-
         if i % 100 == 0:
             print("make reward for inter {0} in folder {1}".format(i, folder))
-
         list_samples = []
         try:
             total_time = int(self.logging_data_list_per_gen[i][-1]['time'] + 1)
-            # construct samples
-            time_count = 0
             for time in range(0, total_time - self.measure_time + 1, self.interval):
                 state = self.construct_state(self.dic_traffic_env_conf["LIST_STATE_FEATURE"], time, i)
                 reward_instant, reward_average = self.construct_reward(self.dic_traffic_env_conf["DIC_REWARD_INFO"],
@@ -150,18 +132,12 @@ class ConstructSample:
             return 0
 
     def make_reward_for_system(self):
-        """
-        Iterate all the generator folders, and load all the logging data for all intersections for that folder
-        At last, save all the logging data for that intersection [all the generators]
-        :return:
-        """
         for folder in os.listdir(self.path_to_samples):
             print(folder)
             if "generator" not in folder:
                 continue
             if not self.load_data_for_system(folder):
                 continue
-
             for i in range(self.dic_traffic_env_conf['NUM_INTERSECTIONS']):
                 pass_code = self.make_reward(folder, i)
                 if pass_code == 0:

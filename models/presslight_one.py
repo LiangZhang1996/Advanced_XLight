@@ -31,7 +31,7 @@ class PressLightAgentOne(NetworkAgent):
         list_selected_q_values = []
         for phase_id in range(1, self.num_phases + 1):
             if self.dic_traffic_env_conf["BINARY_PHASE_EXPANSION"]:
-                phase_expansion = self.dic_traffic_env_conf["PHASE"]["anon"][phase_id]
+                phase_expansion = self.dic_traffic_env_conf["PHASE"][phase_id]
             else:
                 phase_expansion = phase_id
             locals()["q_values_{0}".format(phase_id)] = self._separate_network_structure(
@@ -122,7 +122,7 @@ class PressLightAgentOne(NetworkAgent):
                 # print(s[feature_name])
                 if feature_name == "cur_phase":
                     dic_state_feature_arrays[feature_name].append(
-                        self.dic_traffic_env_conf['PHASE']["anon"][s[feature_name][0]])
+                        self.dic_traffic_env_conf['PHASE'][s[feature_name][0]])
                 else:
                     dic_state_feature_arrays[feature_name].append(s[feature_name])
 

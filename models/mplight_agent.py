@@ -8,43 +8,10 @@ from tensorflow.keras.layers import Input, Dense, Reshape,  Lambda,  Activation,
     multiply
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
-from .network_agent import NetworkAgent
+from .network_agent import NetworkAgent, slice_tensor, relation
 from tensorflow.keras import backend as K
 import numpy as np
 import random
-
-
-def slice_tensor(x, index):
-    x_shape = K.int_shape(x)
-    if len(x_shape) == 3:
-        return x[:, index, :]
-    elif len(x_shape) == 2:
-        return Reshape((1, ))(x[:, index])
-
-
-def relation(x, phase_list):
-    relations = []
-    num_phase = len(phase_list)
-    if num_phase == 8:
-        for p1 in phase_list:
-            zeros = [0, 0, 0, 0, 0, 0, 0]
-            count = 0
-            for p2 in phase_list:
-                if p1 == p2:
-                    continue
-                m1 = p1.split("_")
-                m2 = p2.split("_")
-                if len(list(set(m1 + m2))) == 3:
-                    zeros[count] = 1
-                count += 1
-            relations.append(zeros)
-        relations = np.array(relations).reshape((1, 8, 7))
-    else:
-        relations = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]).reshape((1, 4, 3))
-    batch_size = K.shape(x)[0]
-    constant = K.constant(relations)
-    constant = K.tile(constant, (batch_size, 1, 1))
-    return constant
 
 
 class MPLightAgent(NetworkAgent):
@@ -134,8 +101,7 @@ class MPLightAgent(NetworkAgent):
             inputs = []
             for feature in self.dic_traffic_env_conf["LIST_STATE_FEATURE"]:
                 if feature == "cur_phase":
-                    inputs.append(np.array([self.dic_traffic_env_conf['PHASE']
-                                            [self.dic_traffic_env_conf['SIMULATOR_TYPE']][s[feature][0]]]))
+                    inputs.append(np.array([self.dic_traffic_env_conf['PHASE'][s[feature][0]]]))
                 else:
                     inputs.append(np.array([s[feature]]))
             return inputs
@@ -150,7 +116,7 @@ class MPLightAgent(NetworkAgent):
         for s in states:
             for feature_name in self.dic_traffic_env_conf["LIST_STATE_FEATURE"]:
                 if feature_name == "cur_phase":
-                    dic_state_feature_arrays[feature_name].append(self.dic_traffic_env_conf['PHASE']["anon"][s[feature_name][0]])
+                    dic_state_feature_arrays[feature_name].append(self.dic_traffic_env_conf['PHASE'][s[feature_name][0]])
                 else:
                     dic_state_feature_arrays[feature_name].append(s[feature_name])
         state_input = [np.array(dic_state_feature_arrays[feature_name]) for feature_name in

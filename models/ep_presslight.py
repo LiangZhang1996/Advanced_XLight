@@ -30,7 +30,7 @@ class EPressLightAgent(NetworkAgent):
         list_selected_q_values = []
         for phase_id in range(1, self.num_phases + 1):
             if self.dic_traffic_env_conf["BINARY_PHASE_EXPANSION"]:
-                phase_expansion = self.dic_traffic_env_conf["PHASE"]["anon"][phase_id]
+                phase_expansion = self.dic_traffic_env_conf["PHASE"][phase_id]
             else:
                 phase_expansion = phase_id
             locals()["q_values_{0}".format(phase_id)] = self._separate_network_structure(

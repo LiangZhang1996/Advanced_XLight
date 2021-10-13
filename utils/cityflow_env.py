@@ -26,7 +26,7 @@ class Intersection:
         self.dic_exiting_approach_to_edge = {
             approach: "road_{0}_{1}_{2}".format(inter_id[0], inter_id[1], self.dic_approach_to_node[approach]) for
             approach in self.list_approachs}
-        self.list_phases = dic_traffic_env_conf["PHASE"][dic_traffic_env_conf["SIMULATOR_TYPE"]]
+        self.list_phases = dic_traffic_env_conf["PHASE"]
 
         # generate all lanes
         self.list_entering_lanes = []
@@ -137,7 +137,7 @@ class Intersection:
         self.dic_vehicle_speed_previous_step = self.dic_vehicle_speed_current_step
         self.dic_vehicle_distance_previous_step = self.dic_vehicle_distance_current_step
 
-    def update_current_measurements_map(self, simulator_state):
+    def update_current_measurements(self, simulator_state):
         def _change_lane_vehicle_dic_to_list(dic_lane_vehicle):
             list_lane_vehicle = []
             for value in dic_lane_vehicle.values():
@@ -184,7 +184,7 @@ class Intersection:
         self._update_arrive_time(list_vehicle_new_arrive)
         self._update_left_time(list_vehicle_new_left)
         # update feature
-        self._update_feature_map()
+        self._update_feature()
 
     def _update_leave_entering_approach_vehicle(self):
         list_entering_lane_vehicle_left = []
@@ -221,7 +221,7 @@ class Intersection:
                 print("vehicle not recorded when entering")
                 sys.exit(-1)
 
-    def _update_feature_map(self):
+    def _update_feature(self):
         dic_feature = dict()
         dic_feature["cur_phase"] = [self.current_phase_index]
         dic_feature["time_this_phase"] = [self.current_phase_duration]
@@ -380,17 +380,15 @@ class Intersection:
         return reward
 
 
-class AnonEnv:
+class CityFlowEnv:
 
     def __init__(self, path_to_log, path_to_work_directory, dic_traffic_env_conf):
         self.path_to_log = path_to_log
         self.path_to_work_directory = path_to_work_directory
         self.dic_traffic_env_conf = dic_traffic_env_conf
 
-        self.simulator_type = self.dic_traffic_env_conf["SIMULATOR_TYPE"]
         self.current_time = None
         self.id_to_index = None
-        self.lane_normalize_factor, self.lane_length = None, None
         self.traffic_light_node_dict = None
         self.eng = None
         self.list_intersection = None
@@ -402,6 +400,7 @@ class AnonEnv:
         if self.dic_traffic_env_conf["MIN_ACTION_TIME"] <= self.dic_traffic_env_conf["YELLOW_TIME"]:
             """ include the yellow time in action time """
             print("MIN_ACTION_TIME should include YELLOW_TIME")
+            sys.exit()
 
         # touch new inter_{}.pkl (if exists, remove)
         for inter_ind in range(self.dic_traffic_env_conf["NUM_INTERSECTIONS"]):
@@ -410,7 +409,6 @@ class AnonEnv:
             f.close()
 
     def reset(self):
-        # self.eng.reset() to be implemented
         print(" ============= self.eng.reset() to be implemented ==========")
         cityflow_config = {
             "interval": self.dic_traffic_env_conf["INTERVAL"],
@@ -461,7 +459,7 @@ class AnonEnv:
                               }
 
         for inter in self.list_intersection:
-            inter.update_current_measurements_map(self.system_states)
+            inter.update_current_measurements(self.system_states)
         state, done = self.get_state()
         return state
 
@@ -531,7 +529,7 @@ class AnonEnv:
                               }
 
         for inter in self.list_intersection:
-            inter.update_current_measurements_map(self.system_states)
+            inter.update_current_measurements(self.system_states)
 
     def get_feature(self):
         list_feature = [inter.get_feature() for inter in self.list_intersection]
@@ -641,7 +639,7 @@ class AnonEnv:
                 # row = np.zeros((self.dic_traffic_env_conf["NUM_ROW"],self.dic_traffic_env_conf["NUM_col"]))
                 for j in traffic_light_node_dict.keys():
                     location_2 = traffic_light_node_dict[j]["location"]
-                    dist = AnonEnv._cal_distance(location_1, location_2)
+                    dist = self._cal_distance(location_1, location_2)
                     row[inter_id_to_index[j]] = dist
                 if len(row) == top_k:
                     adjacency_row_unsorted = np.argpartition(row, -1)[:top_k].tolist()
@@ -672,5 +670,5 @@ class AnonEnv:
         return np.sqrt(np.sum((a-b)**2))
 
     @staticmethod
-    def end_anon():
-        print("anon process end")
+    def end_cityflow():
+        print("============== cityflow process end ===============")

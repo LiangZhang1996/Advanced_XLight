@@ -32,7 +32,6 @@ class Updater:
         try:
             sample_file = open(os.path.join(self.dic_path["PATH_TO_WORK_DIRECTORY"], "train_round",
                                             "total_samples_inter_{0}".format(i) + ".pkl"), "rb")
-            """ load memory """
             try:
                 cur_sample_set = []
                 while True:
@@ -46,9 +45,6 @@ class Updater:
             # forget
             memory_after_forget = cur_sample_set[ind_sta: ind_end]
             print("==== memory size after forget ====:", len(memory_after_forget))
-            """
-            save the new memory every 20 round 
-            """
             if self.cnt_round % self.dic_traffic_env_conf["FORGET_ROUND"] == 0:
                 with open(os.path.join(self.dic_path["PATH_TO_WORK_DIRECTORY"], "train_round",
                                        "total_samples_inter_{0}".format(i) + ".pkl"), "wb+") as f:
@@ -60,7 +56,7 @@ class Updater:
             sample_set = [memory_after_forget[k] for k in self.sample_indexes]
             print("==== memory samples number =====:", sample_size)
 
-        except Exception as e:
+        except:
             error_dir = os.path.join(self.dic_path["PATH_TO_WORK_DIRECTORY"]).replace("records", "errors")
             if not os.path.exists(error_dir):
                 os.makedirs(error_dir)
@@ -77,13 +73,13 @@ class Updater:
     def load_sample_for_agents(self):
         start_time = time.time()
         print("Start load samples at", start_time)
-        if self.dic_traffic_env_conf['MODEL_NAME'] in ["PressLightOne", "MPLight"]:
+        if self.dic_traffic_env_conf['MODEL_NAME'] in ["EPressLightOne", "PressLightOne", "MPLight"]:
             sample_set_all = []
             for i in range(self.dic_traffic_env_conf['NUM_INTERSECTIONS']):
                 sample_set = self.load_sample_with_forget(i)
                 sample_set_all.extend(sample_set)
             self.agents[0].prepare_Xs_Y(sample_set_all)
-        elif self.dic_traffic_env_conf['MODEL_NAME'] in ["PressLight"]:
+        elif self.dic_traffic_env_conf['MODEL_NAME'] in ["PressLight", "EPressLight"]:
             for i in range(self.dic_traffic_env_conf['NUM_INTERSECTIONS']):
                 sample_set = self.load_sample_with_forget(i)
                 self.agents[i].prepare_Xs_Y(sample_set)

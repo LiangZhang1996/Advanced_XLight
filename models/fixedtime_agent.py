@@ -13,7 +13,7 @@ class FixedtimeAgent(Agent):
         super(FixedtimeAgent, self).__init__(dic_agent_conf, dic_traffic_env_conf, dic_path, intersection_id)
 
         self.current_phase_time = 0
-        self.phase_length = len(self.dic_traffic_env_conf["PHASE"][self.dic_traffic_env_conf["SIMULATOR_TYPE"]])
+        self.phase_length = len(self.dic_traffic_env_conf["PHASE"])
         self.DIC_PHASE_MAP = {
                 1: 0,
                 2: 1,

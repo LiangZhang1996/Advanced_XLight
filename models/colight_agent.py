@@ -30,7 +30,7 @@ class CoLightAgent(Agent):
         self.num_agents = dic_traffic_env_conf['NUM_INTERSECTIONS']
         self.num_neighbors = min(dic_traffic_env_conf['TOP_K_ADJACENCY'], self.num_agents)
 
-        self.num_actions = len(self.dic_traffic_env_conf["PHASE"][self.dic_traffic_env_conf['SIMULATOR_TYPE']])
+        self.num_actions = len(self.dic_traffic_env_conf["PHASE"])
         self.len_feature = 20
         self.memory = build_memory()
 
@@ -158,15 +158,13 @@ class CoLightAgent(Agent):
             for feature in used_feature:
                 if feature == "cur_phase":
                     if self.dic_traffic_env_conf["BINARY_PHASE_EXPANSION"]:
-                        feat1.append(self.dic_traffic_env_conf['PHASE']["anon"][s[i][feature][0]])
+                        feat1.append(self.dic_traffic_env_conf['PHASE'][s[i][feature][0]])
                     else:
                         feat1.append(s[i][feature])
                 else:
                     feat2.append(s[i][feature])
         # [1, agent, dim]
         feats = np.concatenate([np.array([feat1]), np.array([feat2])], axis=-1)
-        print("======================")
-        print(feats.shape)
         # [1, agent, nei, agent]
         adj = self.adjacency_index2matrix(np.array([adj]))
         return [feats, adj]
@@ -218,7 +216,6 @@ class CoLightAgent(Agent):
         # [batch, 1, dim] -> [batch, agent, dim]
         _state2 = np.concatenate([np.array(ss) for ss in _state], axis=1)
         _next_state2 = np.concatenate([np.array(ss) for ss in _next_state], axis=1)
-        print(_state2.shape)
         target = self.q_network([_state2, _adjs2])
         next_state_qvalues = self.q_network_bar([_next_state2, _adjs2])
         # [batch, agent, num_actions]

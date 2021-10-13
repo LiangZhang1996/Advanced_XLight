@@ -1,5 +1,5 @@
 import numpy as np
-from tensorflow.keras.layers import Layer
+from tensorflow.keras.layers import Layer, Reshape
 from tensorflow.keras.models import model_from_json, load_model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
@@ -16,8 +16,8 @@ class NetworkAgent(Agent):
             dic_agent_conf, dic_traffic_env_conf, dic_path, intersection_id=intersection_id)
 
         # ===== check num actions == num phases ============
-        self.num_actions = len(dic_traffic_env_conf["PHASE"][dic_traffic_env_conf['SIMULATOR_TYPE']])
-        self.num_phases = len(dic_traffic_env_conf["PHASE"][dic_traffic_env_conf['SIMULATOR_TYPE']])
+        self.num_actions = len(dic_traffic_env_conf["PHASE"])
+        self.num_phases = len(dic_traffic_env_conf["PHASE"])
         # self.num_lanes = np.sum(np.array(list(self.dic_traffic_env_conf["LANE_NUM"].values())))
 
         self.memory = self.build_memory()
@@ -148,8 +148,7 @@ class NetworkAgent(Agent):
             inputs = []
             for feature in self.dic_traffic_env_conf["LIST_STATE_FEATURE"]:
                 if "cur_phase" in feature:
-                    inputs.append(np.array([self.dic_traffic_env_conf['PHASE']
-                                            [self.dic_traffic_env_conf['SIMULATOR_TYPE']][s[feature][0]]]))
+                    inputs.append(np.array([self.dic_traffic_env_conf['PHASE'][s[feature][0]]]))
                 else:
                     inputs.append(np.array([s[feature]]))
             return inputs
@@ -203,3 +202,36 @@ class Selector(Layer):
     def compute_output_shape(self, input_shape):
         batch_size = input_shape[0]
         return [batch_size, self.d_action]
+
+
+def slice_tensor(x, index):
+    x_shape = K.int_shape(x)
+    if len(x_shape) == 3:
+        return x[:, index, :]
+    elif len(x_shape) == 2:
+        return Reshape((1, ))(x[:, index])
+
+
+def relation(x, phase_list):
+    relations = []
+    num_phase = len(phase_list)
+    if num_phase == 8:
+        for p1 in phase_list:
+            zeros = [0, 0, 0, 0, 0, 0, 0]
+            count = 0
+            for p2 in phase_list:
+                if p1 == p2:
+                    continue
+                m1 = p1.split("_")
+                m2 = p2.split("_")
+                if len(list(set(m1 + m2))) == 3:
+                    zeros[count] = 1
+                count += 1
+            relations.append(zeros)
+        relations = np.array(relations).reshape((1, 8, 7))
+    else:
+        relations = np.array([[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]]).reshape((1, 4, 3))
+    batch_size = K.shape(x)[0]
+    constant = K.constant(relations)
+    constant = K.tile(constant, (batch_size, 1, 1))
+    return constant

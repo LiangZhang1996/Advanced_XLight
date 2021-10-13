@@ -10,7 +10,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-memo",       type=str,           default='benchmark_1001')
     parser.add_argument("-mod",        type=str,           default="Colight")
-    parser.add_argument("-eightphase",  action="store_true", default=False)
+    parser.add_argument("-eightphase",  action="store_true", default=True)
     parser.add_argument("-gen",        type=int,            default=1)
     parser.add_argument("-multi_process", action="store_true", default=True)
     parser.add_argument("-workers",    type=int,            default=3)
@@ -21,7 +21,6 @@ def parse_args():
 
 def main(in_args=None):
     if in_args.hangzhou:
-        lane = [3, 3, 3, 3]
         count = 3600
         road_net = "4_4"
         traffic_file_list = ["anon_4_4_hangzhou_real.json",
@@ -29,8 +28,7 @@ def main(in_args=None):
         num_rounds = 80
         template = "Hangzhou"
     elif in_args.jinan:
-        lane = [3, 3, 3, 3]
-        count = 3600
+        count = 60
         road_net = "3_4"
         traffic_file_list = ["anon_3_4_jinan_real.json", "anon_3_4_jinan_real_2000.json",
                              "anon_3_4_jinan_real_2500.json"]
@@ -44,11 +42,14 @@ def main(in_args=None):
     print(traffic_file_list)
     process_list = []
     for traffic_file in traffic_file_list:
+        dic_agent_conf_extra = {
+            "CNN_layers": [[32, 32]],
+        }
+        deploy_dic_agent_conf = merge(getattr(config, "DIC_BASE_AGENT_CONF"), dic_agent_conf_extra)
+
         dic_traffic_env_conf_extra = {
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,
-            "TOP_K_ADJACENCY": 5,
-            "NUM_LANES": lane,
             "NUM_AGENTS": 1,
             "NUM_INTERSECTIONS": num_intersections,
             "RUN_COUNTS": count,
@@ -69,20 +70,10 @@ def main(in_args=None):
             "DIC_REWARD_INFO": {
                 "queue_length": -0.25,
             },
-            "PHASE": {
-                "anon": {
-                    1: [0, 1, 0, 1, 0, 0, 0, 0],  # 'WSES',
-                    2: [0, 0, 0, 0, 0, 1, 0, 1],  # 'NSSS',
-                    3: [1, 0, 1, 0, 0, 0, 0, 0],  # 'WLEL',
-                    4: [0, 0, 0, 0, 1, 0, 1, 0]  # 'NLSL',
-                },
-            },
-            "list_lane_order": ["WL", "WT", "EL", "ET", "NL", "NT", "SL", "ST"],
-            "PHASE_LIST": ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL'],
         }
 
         if in_args.eightphase:
-            dic_traffic_env_conf_extra["PHASE"]["anon"] = {
+            dic_traffic_env_conf_extra["PHASE"] = {
                 1: [0, 1, 0, 1, 0, 0, 0, 0],
                 2: [0, 0, 0, 0, 0, 1, 0, 1],
                 3: [1, 0, 1, 0, 0, 0, 0, 0],
@@ -102,9 +93,7 @@ def main(in_args=None):
             "PATH_TO_DATA": os.path.join("data", template, str(road_net)),
             "PATH_TO_ERROR": os.path.join("errors", in_args.memo)
         }
-        deploy_dic_agent_conf = merge(getattr(config, "DIC_{0}_AGENT_CONF".format(in_args.mod.upper())), {})
         deploy_dic_traffic_env_conf = merge(config.dic_traffic_env_conf, dic_traffic_env_conf_extra)
-
         deploy_dic_path = merge(config.DIC_PATH, dic_path_extra)
 
         if in_args.multi_process:

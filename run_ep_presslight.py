@@ -22,14 +22,12 @@ def parse_args():
 def main(in_args=None):
 
     if in_args.hangzhou:
-        lane = [3, 3, 3, 3]
         count = 3600
         road_net = "4_4"
         traffic_file_list = ["anon_4_4_hangzhou_real.json", "anon_4_4_hangzhou_real_5816.json"]
         num_rounds = 80
         template = "Hangzhou"
     elif in_args.jinan:
-        lane = [3, 3, 3, 3]
         count = 3600
         road_net = "3_4"
         traffic_file_list = ["anon_3_4_jinan_real.json", "anon_3_4_jinan_real_2000.json",
@@ -50,7 +48,6 @@ def main(in_args=None):
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,
 
-            "NUM_LANES": lane,
             "NUM_AGENTS": num_intersections,
             "NUM_INTERSECTIONS": num_intersections,
 
@@ -63,33 +60,21 @@ def main(in_args=None):
             "NUM_COL": NUM_COL,
 
             "TRAFFIC_FILE": traffic_file,
-            "VOLUME": 300,
 
             "ROADNET_FILE": "roadnet_{0}.json".format(road_net),
 
             "LIST_STATE_FEATURE": [
                 "cur_phase",
-                "traffic_movement_pressure_efficient",
+                "traffic_movement_pressure_queue_efficient",
             ],
 
             "DIC_REWARD_INFO": {
                 "pressure": -0.25,
             },
-            "PHASE": {
-                "anon": {
-                    1: [0, 1, 0, 1, 0, 0, 0, 0],  # 'WSES',
-                    2: [0, 0, 0, 0, 0, 1, 0, 1],  # 'NSSS',
-                    3: [1, 0, 1, 0, 0, 0, 0, 0],  # 'WLEL',
-                    4: [0, 0, 0, 0, 1, 0, 1, 0]  # 'NLSL',
-                },
-            },
-            "list_lane_order": ["WL", "WT", "EL", "ET", "NL", "NT", "SL", "ST"],
-            "PHASE_LIST": ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL'],
-
         }
 
         if in_args.eightphase:
-            dic_traffic_env_conf_extra["PHASE"]["anon"] = {
+            dic_traffic_env_conf_extra["PHASE"] = {
                 1: [0, 1, 0, 1, 0, 0, 0, 0],
                 2: [0, 0, 0, 0, 0, 1, 0, 1],
                 3: [1, 0, 1, 0, 0, 0, 0, 0],
@@ -102,7 +87,7 @@ def main(in_args=None):
             dic_traffic_env_conf_extra["PHASE_LIST"] = ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL',
                                                         'WL_WT', 'EL_ET', 'SL_ST', 'NL_NT']
 
-        if in_args.mod in ["PressLightOne"]:
+        if in_args.mod in ["EPressLightOne"]:
             dic_traffic_env_conf_extra["NUM_AGENTS"] = 1
         dic_path_extra = {
             "PATH_TO_MODEL": os.path.join("model", in_args.memo, traffic_file + "_"
@@ -113,7 +98,7 @@ def main(in_args=None):
             "PATH_TO_ERROR": os.path.join("errors", in_args.memo)
         }
 
-        deploy_dic_agent_conf = merge(getattr(config, "DIC_{0}_AGENT_CONF".format(in_args.mod.upper())), {})
+        deploy_dic_agent_conf = getattr(config, "DIC_BASE_AGENT_CONF")
         deploy_dic_traffic_env_conf = merge(config.dic_traffic_env_conf, dic_traffic_env_conf_extra)
 
         deploy_dic_path = merge(config.DIC_PATH, dic_path_extra)

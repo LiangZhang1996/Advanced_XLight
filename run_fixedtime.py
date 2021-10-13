@@ -23,14 +23,12 @@ def parse_args():
 
 def main(in_args):
     if in_args.hangzhou:
-        lane = [3, 3, 3, 3]
         count = 3600
         road_net = "4_4"
         traffic_file_list = ["anon_4_4_hangzhou_real.json", "anon_4_4_hangzhou_real_5734.json",
                              "anon_4_4_hangzhou_real_5816.json"]
         template = "Hangzhou"
     elif in_args.jinan:
-        lane = [3, 3, 3, 3]
         count = 3600
         road_net = "3_4"
         traffic_file_list = ["anon_3_4_jinan_real.json", "anon_3_4_jinan_real_2000.json",
@@ -45,7 +43,6 @@ def main(in_args):
     process_list = []
     for traffic_file in traffic_file_list:
         dic_traffic_env_conf_extra = {
-            "NUM_LANES": lane,
             "NUM_AGENTS": num_intersections,
             "NUM_INTERSECTIONS": num_intersections,
             "MODEL_NAME": in_args.model,

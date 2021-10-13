@@ -1,7 +1,9 @@
+from .config import DIC_AGENTS
+from copy import deepcopy
+from .cityflow_env import CityFlowEnv
 import json
 import os
-from .config import DIC_AGENTS, DIC_ENVS
-from copy import deepcopy
+
 
 
 def test(model_dir, cnt_round, run_cnt, _dic_traffic_env_conf):
@@ -37,10 +39,11 @@ def test(model_dir, cnt_round, run_cnt, _dic_traffic_env_conf):
         path_to_log = os.path.join(dic_path["PATH_TO_WORK_DIRECTORY"], "test_round", model_round)
         if not os.path.exists(path_to_log):
             os.makedirs(path_to_log)
-        env = DIC_ENVS[dic_traffic_env_conf["SIMULATOR_TYPE"]](path_to_log=path_to_log,
-                                                               path_to_work_directory=dic_path[
-                                                                   "PATH_TO_WORK_DIRECTORY"],
-                                                               dic_traffic_env_conf=dic_traffic_env_conf)
+        env = CityFlowEnv(
+            path_to_log=path_to_log,
+            path_to_work_directory=dic_path["PATH_TO_WORK_DIRECTORY"],
+            dic_traffic_env_conf=dic_traffic_env_conf
+        )
 
         done = False
 
@@ -54,7 +57,7 @@ def test(model_dir, cnt_round, run_cnt, _dic_traffic_env_conf):
 
             for i in range(dic_traffic_env_conf["NUM_AGENTS"]):
 
-                if dic_traffic_env_conf["MODEL_NAME"] in ["PressLightOne", "MPLight", "Colight"]:
+                if dic_traffic_env_conf["MODEL_NAME"] in ["PressLightOne", "EPressLightOne","MPLight", "Colight"]:
                     one_state = state
                     action_list = agents[i].choose_action(step_num, one_state)
                 else:
@@ -68,6 +71,6 @@ def test(model_dir, cnt_round, run_cnt, _dic_traffic_env_conf):
             step_num += 1
 
         env.batch_log_2()
-        env.end_anon()
+        env.end_cityflow()
     except:
         print("============== error occurs in model_test ============")

@@ -21,14 +21,12 @@ def parse_args():
 def main(in_args):
 
     if in_args.hangzhou:
-        lane = [3, 3, 3, 3]
         count = 3600
         road_net = "4_4"
         traffic_file_list = ["anon_4_4_hangzhou_real.json",
                              "anon_4_4_hangzhou_real_5816.json"]
         template = "Hangzhou"
     elif in_args.jinan:
-        lane = [3, 3, 3, 3]
         count = 3600
         road_net = "3_4"
         traffic_file_list = ["anon_3_4_jinan_real.json", "anon_3_4_jinan_real_2000.json",
@@ -44,13 +42,11 @@ def main(in_args):
 
     for traffic_file in traffic_file_list:
         dic_traffic_env_conf_extra = {
-            "NUM_LANES": lane,
             "NUM_AGENTS": num_intersections,
             "NUM_INTERSECTIONS": num_intersections,
 
             "MODEL_NAME": in_args.model,
             "RUN_COUNTS": count,
-            "TOP_K_ADJACENCY": 5,
             "NUM_ROW": NUM_ROW,
             "NUM_COL": NUM_COL,
 
@@ -65,19 +61,9 @@ def main(in_args):
             "DIC_REWARD_INFO": {
                 "pressure": 0
             },
-            "PHASE": {
-                "anon": {
-                    1: [0, 1, 0, 1, 0, 0, 0, 0],  # 'WSES',
-                    2: [0, 0, 0, 0, 0, 1, 0, 1],  # 'NSSS',
-                    3: [1, 0, 1, 0, 0, 0, 0, 0],  # 'WLEL',
-                    4: [0, 0, 0, 0, 1, 0, 1, 0]  # 'NLSL',
-                },
-            },
-            "list_lane_order": ["WL", "WT", "EL", "ET", "NL", "NT", "SL", "ST"],
-            "PHASE_LIST": ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL'],
         }
         if in_args.eightphase:
-            dic_traffic_env_conf_extra["PHASE"]["anon"] = {
+            dic_traffic_env_conf_extra["PHASE"] = {
                 1: [0, 1, 0, 1, 0, 0, 0, 0],
                 2: [0, 0, 0, 0, 0, 1, 0, 1],
                 3: [1, 0, 1, 0, 0, 0, 0, 0],
@@ -94,13 +80,12 @@ def main(in_args):
             "FIXED_TIME": [15, 15, 15, 15],
         }
         dic_traffic_env_conf_extra["NUM_AGENTS"] = dic_traffic_env_conf_extra["NUM_INTERSECTIONS"]
-        prefix_intersections = str(road_net)
         dic_path_extra = {
             "PATH_TO_MODEL": os.path.join("model", in_args.memo, traffic_file + "_" +
                                           time.strftime('%m_%d_%H_%M_%S', time.localtime(time.time()))),
             "PATH_TO_WORK_DIRECTORY": os.path.join("records", in_args.memo, traffic_file + "_" +
                                                    time.strftime('%m_%d_%H_%M_%S', time.localtime(time.time()))),
-            "PATH_TO_DATA": os.path.join("data", template, prefix_intersections)
+            "PATH_TO_DATA": os.path.join("data", template, str(road_net))
         }
 
         if in_args.multi_process:
