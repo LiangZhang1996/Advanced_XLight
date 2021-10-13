@@ -61,14 +61,9 @@ class CoLightAgent(Agent):
             except:
                 print("fail to load network, current round: {0}".format(cnt_round))
 
-        # TODO: Why?
-        if os.path.exists(
-                os.path.join(self.dic_path["PATH_TO_MODEL"], "round_-1_inter_{0}.h5".format(intersection_id))):
-            self.dic_agent_conf["EPSILON"] = self.dic_agent_conf["MIN_EPSILON"]
-            print('round%d, EPSILON:%.4f' % (cnt_round, self.dic_agent_conf["EPSILON"]))
-        else:
-            decayed_epsilon = self.dic_agent_conf["EPSILON"] * pow(self.dic_agent_conf["EPSILON_DECAY"], cnt_round)
-            self.dic_agent_conf["EPSILON"] = max(decayed_epsilon, self.dic_agent_conf["MIN_EPSILON"])
+
+        decayed_epsilon = self.dic_agent_conf["EPSILON"] * pow(self.dic_agent_conf["EPSILON_DECAY"], cnt_round)
+        self.dic_agent_conf["EPSILON"] = max(decayed_epsilon, self.dic_agent_conf["MIN_EPSILON"])
 
     @staticmethod
     def MLP(ins, layers=None):

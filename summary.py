@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import json
 import shutil
+import copy
 
 
 def get_metrics(duration_list, traffic_name, total_summary_metrics, num_of_out):
@@ -171,6 +172,6 @@ if __name__ == "__main__":
         "final_duration_std": [],
         "final_through": [],
     }
-    memo = "benchmark_1002"
-    # summary_detail_RL(memo, copy.deepcopy(total_summary))
-    summary_detail_conventional(memo)
+    memo = "benchmark_1001"
+    summary_detail_RL(memo, copy.deepcopy(total_summary))
+    # summary_detail_conventional(memo)
