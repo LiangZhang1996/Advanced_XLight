@@ -26,11 +26,11 @@ python run_presslight.py
 ```
 - MPLight
 ```shell
-python run_mplight.py
+python run_advanced_mplight.py
 ```
 - Colight
 ```shell
-python run_colight.py
+python run_advanced_colight.py
 ```
 ## Rquirements
 `tensorflow=2.4`
