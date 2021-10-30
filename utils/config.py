@@ -1,28 +1,26 @@
 from models.fixedtime_agent import FixedtimeAgent
 from models.maxpressure_agent import MaxPressureAgent
-from models.efficientpressure_agent import EfficientPressureAgent
+from models.efficient_maxpressure_agent import EfficientMaxPressureAgent
 from models.mplight_agent import MPLightAgent
 from models.colight_agent import CoLightAgent
 from models.presslight_one import PressLightAgentOne
-from models.ep_presslight_one import EPressLightAgentOne
-from models.ep_presslight import EPressLightAgent
-from models.presslight import PressLightAgent
-from models.ad_mplight_agent import AdvancedMPLightAgent
-from models.ad_colight_agent import AdvancedCoLightAgent
-
+from models.advanced_mplight_agent import AdvancedMPLightAgent
+from models.advanced_maxpressure_agent import AdvancedMaxPressureAgent
+from models.simple_dqn_one import SimpleDQNAgentOne
 
 DIC_AGENTS = {
     "Fixedtime": FixedtimeAgent,
     "MaxPressure": MaxPressureAgent,
-    "EfficientPressure": EfficientPressureAgent,
-    "PressLight": PressLightAgent,
-    "EPressLight": EPressLightAgent,
-    "PressLightOne": PressLightAgentOne,
-    "EPressLightOne": EPressLightAgentOne,
-    "Colight": CoLightAgent,
-    "MPLight": MPLightAgent,
+    "EfficientMaxPressure": EfficientMaxPressureAgent,
+    "AdvancedMaxPressure": AdvancedMaxPressureAgent,
+
+    "EfficientPressLight": PressLightAgentOne,
+    "EfficientColight": CoLightAgent,
+    "EfficientMPLight": MPLightAgent,
+
     "AdvancedMPLight": AdvancedMPLightAgent,
-    "AdvancedColight": AdvancedCoLightAgent,
+    "AdvancedColight": CoLightAgent,
+    "AdvancedDQN": SimpleDQNAgentOne,
 }
 
 DIC_PATH = {
@@ -35,11 +33,13 @@ DIC_PATH = {
 
 dic_traffic_env_conf = {
 
-    "LIST_MODEL": ["Fixedtime",  "MaxPressure", "MPLight", "Colight", "PressLight", "PressLightOne",
-                   "EfficientPressure", "EPressLight", "EPressLightOne", "AdvancedMPLight", "AdvancedColight"],
-    "LIST_MODEL_NEED_TO_UPDATE": ["MPLight", "Colight", "PressLight", "PressLightOne", "EPressLight", "EPressLightOne",
-                                  "AdvancedMPLight", "AdvancedColight"],
+    "LIST_MODEL": ["Fixedtime",  "MaxPressure", "EfficientMaxPressure", "AdvancedMaxPressure",
+                   "EfficientPressLight", "EfficientColight", "EfficientMPLight",
+                   "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"],
+    "LIST_MODEL_NEED_TO_UPDATE": ["EfficientPressLight", "EfficientColight", "EfficientMPLight",
+                                  "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"],
 
+    "EZ": 1,
     "FORGET_ROUND": 20,
     "RUN_COUNTS": 3600,
     "MODEL_NAME": None,
@@ -48,6 +48,7 @@ dic_traffic_env_conf = {
     "ACTION_PATTERN": "set",
     "NUM_INTERSECTIONS": 1,
 
+    "OBS_LENGTH": 167,
     "MIN_ACTION_TIME": 15,
     "MEASURE_TIME": 15,
 

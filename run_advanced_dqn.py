@@ -9,11 +9,11 @@ import os
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-memo",       type=str,           default='benchmark_1001')
-    parser.add_argument("-mod",        type=str,           default="MPLight")
+    parser.add_argument("-mod",        type=str,           default="AdvancedDQN")
     parser.add_argument("-eightphase",  action="store_true", default=False)
     parser.add_argument("-gen",        type=int,            default=1)
     parser.add_argument("-multi_process", action="store_true", default=True)
-    parser.add_argument("-workers",    type=int,            default=3)
+    parser.add_argument("-workers",    type=int,            default=1)
     parser.add_argument("-hangzhou",    action="store_true", default=False)
     parser.add_argument("-jinan",       action="store_true", default=True)
     return parser.parse_args()
@@ -24,14 +24,14 @@ def main(in_args=None):
     if in_args.hangzhou:
         count = 3600
         road_net = "4_4"
-        traffic_file_list = ["anon_4_4_hangzhou_real.json",
-                             "anon_4_4_hangzhou_real_5816.json"]
+        traffic_file_list = ["anon_4_4_hangzhou_real.json"]  # ,
+                             # "anon_4_4_hangzhou_real_5816.json"]
         num_rounds = 80
         template = "Hangzhou"
     elif in_args.jinan:
         count = 3600
         road_net = "3_4"
-        traffic_file_list = ["anon_3_4_jinan_real.json", "anon_3_4_jinan_real_2000.json",
+        traffic_file_list = ["anon_3_4_jinan_real.json"  , "anon_3_4_jinan_real_2000.json",
                              "anon_3_4_jinan_real_2500.json"]
         num_rounds = 80
         template = "Jinan"
@@ -44,6 +44,11 @@ def main(in_args=None):
     process_list = []
     for traffic_file in traffic_file_list:
         dic_traffic_env_conf_extra = {
+
+            "MIN_ACTION_TIME": 15,
+            "MEASURE_TIME": 15,
+            "OBS_LENGTH": 167,  # 11*15
+
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,
             "NUM_AGENTS": 1,
@@ -59,7 +64,10 @@ def main(in_args=None):
             "TRAFFIC_SEPARATE": traffic_file,
             "LIST_STATE_FEATURE": [
                 "cur_phase",
+                # "traffic_movement_pressure_num_efficient_norm",
                 "traffic_movement_pressure_queue_efficient",
+                "lane_enter_running_part",
+
             ],
 
             "DIC_REWARD_INFO": {
@@ -69,15 +77,15 @@ def main(in_args=None):
 
         if in_args.eightphase:
             dic_traffic_env_conf_extra["PHASE"] = {
-                    1: [0, 1, 0, 1, 0, 0, 0, 0],
-                    2: [0, 0, 0, 0, 0, 1, 0, 1],
-                    3: [1, 0, 1, 0, 0, 0, 0, 0],
-                    4: [0, 0, 0, 0, 1, 0, 1, 0],
-                    5: [1, 1, 0, 0, 0, 0, 0, 0],
-                    6: [0, 0, 1, 1, 0, 0, 0, 0],
-                    7: [0, 0, 0, 0, 0, 0, 1, 1],
-                    8: [0, 0, 0, 0, 1, 1, 0, 0]
-                }
+                1: [0, 1, 0, 1, 0, 0, 0, 0],
+                2: [0, 0, 0, 0, 0, 1, 0, 1],
+                3: [1, 0, 1, 0, 0, 0, 0, 0],
+                4: [0, 0, 0, 0, 1, 0, 1, 0],
+                5: [1, 1, 0, 0, 0, 0, 0, 0],
+                6: [0, 0, 1, 1, 0, 0, 0, 0],
+                7: [0, 0, 0, 0, 0, 0, 1, 1],
+                8: [0, 0, 0, 0, 1, 1, 0, 0]
+            }
             dic_traffic_env_conf_extra["PHASE_LIST"] = ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL',
                                                         'WL_WT', 'EL_ET', 'SL_ST', 'NL_NT']
 

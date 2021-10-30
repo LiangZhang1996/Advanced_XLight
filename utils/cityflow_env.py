@@ -238,8 +238,9 @@ class Intersection:
         dic_feature["traffic_movement_pressure_num"] = self._get_traffic_movement_pressure_general(
             dic_feature["lane_num_vehicle"], dic_feature["lane_num_vehicle_downstream"])
 
-        tmp_part_n, tmp_part_q, tmp_efficient_part, enter_running_part = self._get_part_traffic_movement_features()
+        tmp_part_n, tmp_part_q, tmp_efficient_part, enter_running_part, lepq = self._get_part_traffic_movement_features()
 
+        dic_feature["lane_queue_part_in"] = lepq
         dic_feature["traffic_movement_pressure_num_part"] = tmp_part_n
         dic_feature["traffic_movement_pressure_queue_part"] = tmp_part_q
         dic_feature["traffic_movement_pressure_queue_efficient_part"] = tmp_efficient_part
@@ -327,7 +328,7 @@ class Intersection:
         # part of entering running vehicles, all at the end of the road
         part_entering_running = np.array(list_entering_num_l) - np.array(list_entering_part_queue)
 
-        return traffic_movement_pressure_nums, tmp_queue_part, tmp_queue_efficient_part, part_entering_running
+        return traffic_movement_pressure_nums, tmp_queue_part, tmp_queue_efficient_part, part_entering_running, list_entering_part_queue
 
     @staticmethod
     def _get_part_observations(lane_vehicles, vehicle_distance, vehicle_speed,

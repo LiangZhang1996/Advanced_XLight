@@ -57,8 +57,8 @@ def test(model_dir, cnt_round, run_cnt, _dic_traffic_env_conf):
 
             for i in range(dic_traffic_env_conf["NUM_AGENTS"]):
 
-                if dic_traffic_env_conf["MODEL_NAME"] in ["PressLightOne", "EPressLightOne", "MPLight", "Colight",
-                                                          "AdvancedMPLight", "AdvancedColight"]:
+                if dic_traffic_env_conf["MODEL_NAME"] in ["EfficientPressLight", "EfficientColight", "EfficientMPLight",
+                                                          "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"]:
                     one_state = state
                     action_list = agents[i].choose_action(step_num, one_state)
                 else:

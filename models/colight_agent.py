@@ -31,8 +31,13 @@ class CoLightAgent(Agent):
         self.num_neighbors = min(dic_traffic_env_conf['TOP_K_ADJACENCY'], self.num_agents)
 
         self.num_actions = len(self.dic_traffic_env_conf["PHASE"])
-        self.len_feature = 20
+        self.len_feature = self._cal_len_feature()
         self.memory = build_memory()
+
+        # EZ-greedy
+        self.n = 0
+        self.omega = None  # persist actions
+        self.ze = self.dic_traffic_env_conf["EZ"]  # [ 0, 1, 2]
 
         if cnt_round == 0:
             # initialization
@@ -64,6 +69,16 @@ class CoLightAgent(Agent):
 
         decayed_epsilon = self.dic_agent_conf["EPSILON"] * pow(self.dic_agent_conf["EPSILON_DECAY"], cnt_round)
         self.dic_agent_conf["EPSILON"] = max(decayed_epsilon, self.dic_agent_conf["MIN_EPSILON"])
+
+    def _cal_len_feature(self):
+        N = 0
+        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:-1]
+        for feat_name in used_feature:
+            if "cur_phase" in feat_name:
+                N += 8
+            else:
+                N += 12
+        return N
 
     @staticmethod
     def MLP(ins, layers=None):
@@ -145,21 +160,26 @@ class CoLightAgent(Agent):
         """
         s: [state1, state2, ..., staten]
         """
-        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:2]
-        feat1, feat2 = [], []
+        # TODO
+        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:-1]
+        feats0 = []
         adj = []
         for i in range(self.num_agents):
             adj.append(s[i]["adjacency_matrix"])
+            tmp = []
             for feature in used_feature:
                 if feature == "cur_phase":
                     if self.dic_traffic_env_conf["BINARY_PHASE_EXPANSION"]:
-                        feat1.append(self.dic_traffic_env_conf['PHASE'][s[i][feature][0]])
+                        tmp.extend(self.dic_traffic_env_conf['PHASE'][s[i][feature][0]])
                     else:
-                        feat1.append(s[i][feature])
+                        tmp.extend(s[i][feature])
                 else:
-                    feat2.append(s[i][feature])
+                    tmp.extend(s[i][feature])
+
+            feats0.append(tmp)
         # [1, agent, dim]
-        feats = np.concatenate([np.array([feat1]), np.array([feat2])], axis=-1)
+        # feats = np.concatenate([np.array([feat1]), np.array([feat2])], axis=-1)
+        feats = np.array([feats0])
         # [1, agent, nei, agent]
         adj = self.adjacency_index2matrix(np.array([adj]))
         return [feats, adj]
@@ -179,6 +199,32 @@ class CoLightAgent(Agent):
             action = np.argmax(q_values[0], axis=1)
         return action
 
+    def choose_action_map(self, count, states):
+        xs = self.convert_state_to_input(states)
+        q_values = self.q_network(xs)
+        # ez-greedy
+        if self.n == 0:
+            if random.random() <= self.dic_agent_conf["EPSILON"]:  # continue explore new Random Action
+                self.n = np.random.randint(self.ze)
+                self.omega = np.random.randint(self.num_actions, size=len(q_values[0]))
+                action = self.omega
+            # action = np.random.randint(len(q_values[0]), size=len(q_values))
+            else:
+                action = np.argmax(q_values[0], axis=1)
+        else:
+            assert self.omega is not None
+            action = self.omega
+            self.n -= 1
+
+        return action
+
+    @staticmethod
+    def _concat_list(ls):
+        tmp = []
+        for i in range(len(ls)):
+            tmp += ls[i]
+        return [tmp]
+
     def prepare_Xs_Y(self, memory):
         """
         memory: [slice_data, slice_data, ..., slice_data]
@@ -193,7 +239,7 @@ class CoLightAgent(Agent):
         _action = [[] for _ in range(self.num_agents)]
         _reward = [[] for _ in range(self.num_agents)]
 
-        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:2]
+        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:-1]
 
         for i in range(slice_size):
             _adj = []
@@ -202,8 +248,9 @@ class CoLightAgent(Agent):
                 _action[j].append(action)
                 _reward[j].append(reward)
                 _adj.append(state["adjacency_matrix"])
-                _state[j].append([state[used_feature[0]] + state[used_feature[1]]])
-                _next_state[j].append([next_state[used_feature[0]] + next_state[used_feature[1]]])
+                # TODO
+                _state[j].append(self._concat_list([state[used_feature[i]] for i in range(len(used_feature))]))
+                _next_state[j].append(self._concat_list([next_state[used_feature[i]] for i in range(len(used_feature))]))
             _adjs.append(_adj)
         # [batch, agent, nei, agent]
         _adjs2 = self.adjacency_index2matrix(np.array(_adjs))

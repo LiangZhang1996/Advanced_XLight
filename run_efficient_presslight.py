@@ -1,5 +1,5 @@
-from utils.utils import pipeline_wrapper, merge
 from utils import config
+from utils.utils import pipeline_wrapper, merge
 import time
 from multiprocessing import Process
 import argparse
@@ -8,23 +8,23 @@ import os
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-memo",       type=str,           default='benchmark_1001')
-    parser.add_argument("-mod",        type=str,           default="Colight")
-    parser.add_argument("-eightphase",  action="store_true", default=False)
-    parser.add_argument("-gen",        type=int,            default=1)
-    parser.add_argument("-multi_process", action="store_true", default=True)
-    parser.add_argument("-workers",    type=int,            default=3)
-    parser.add_argument("-hangzhou",    action="store_true", default=False)
-    parser.add_argument("-jinan",       action="store_true", default=True)
+    parser.add_argument("-memo",            type=str,               default='benchmark_1001')
+    parser.add_argument("-mod",             type=str,               default="EfficientPressLight")  # EPressLight
+    parser.add_argument("-eightphase",      action="store_true",    default=False)
+    parser.add_argument("-gen",             type=int,               default=1)
+    parser.add_argument("-multi_process",   action="store_true",    default=True)
+    parser.add_argument("-workers",         type=int,               default=3)
+    parser.add_argument("-hangzhou",        action="store_true",    default=False)
+    parser.add_argument("-jinan",           action="store_true",    default=True)
     return parser.parse_args()
 
 
 def main(in_args=None):
+
     if in_args.hangzhou:
         count = 3600
         road_net = "4_4"
-        traffic_file_list = ["anon_4_4_hangzhou_real.json",
-                             "anon_4_4_hangzhou_real_5816.json"]
+        traffic_file_list = ["anon_4_4_hangzhou_real.json", "anon_4_4_hangzhou_real_5816.json"]
         num_rounds = 80
         template = "Hangzhou"
     elif in_args.jinan:
@@ -41,34 +41,35 @@ def main(in_args=None):
     print('num_intersections:', num_intersections)
     print(traffic_file_list)
     process_list = []
+
     for traffic_file in traffic_file_list:
-        dic_agent_conf_extra = {
-            "CNN_layers": [[32, 32]],
-        }
-        deploy_dic_agent_conf = merge(getattr(config, "DIC_BASE_AGENT_CONF"), dic_agent_conf_extra)
 
         dic_traffic_env_conf_extra = {
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,
+
             "NUM_AGENTS": 1,
             "NUM_INTERSECTIONS": num_intersections,
+
+            "TOP_K_ADJACENCY": 5,
             "RUN_COUNTS": count,
 
             "MODEL_NAME": in_args.mod,
+
             "NUM_ROW": NUM_ROW,
             "NUM_COL": NUM_COL,
+
             "TRAFFIC_FILE": traffic_file,
 
             "ROADNET_FILE": "roadnet_{0}.json".format(road_net),
 
             "LIST_STATE_FEATURE": [
                 "cur_phase",
-                "traffic_movement_pressure_efficient",
-                "adjacency_matrix",
+                "traffic_movement_pressure_queue_efficient",
             ],
 
             "DIC_REWARD_INFO": {
-                "queue_length": -0.25,
+                "pressure": -0.25,
             },
         }
 
@@ -85,15 +86,19 @@ def main(in_args=None):
             }
             dic_traffic_env_conf_extra["PHASE_LIST"] = ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL',
                                                         'WL_WT', 'EL_ET', 'SL_ST', 'NL_NT']
+
         dic_path_extra = {
-            "PATH_TO_MODEL": os.path.join("model", in_args.memo, traffic_file + "_" +
-                                          time.strftime('%m_%d_%H_%M_%S', time.localtime(time.time()))),
+            "PATH_TO_MODEL": os.path.join("model", in_args.memo, traffic_file + "_"
+                                          + time.strftime('%m_%d_%H_%M_%S', time.localtime(time.time()))),
             "PATH_TO_WORK_DIRECTORY": os.path.join("records", in_args.memo, traffic_file + "_"
                                                    + time.strftime('%m_%d_%H_%M_%S', time.localtime(time.time()))),
             "PATH_TO_DATA": os.path.join("data", template, str(road_net)),
             "PATH_TO_ERROR": os.path.join("errors", in_args.memo)
         }
+
+        deploy_dic_agent_conf = getattr(config, "DIC_BASE_AGENT_CONF")
         deploy_dic_traffic_env_conf = merge(config.dic_traffic_env_conf, dic_traffic_env_conf_extra)
+
         deploy_dic_path = merge(config.DIC_PATH, dic_path_extra)
 
         if in_args.multi_process:
@@ -127,3 +132,4 @@ if __name__ == "__main__":
     args = parse_args()
 
     main(args)
+

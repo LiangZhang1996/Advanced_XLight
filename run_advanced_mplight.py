@@ -15,7 +15,8 @@ def parse_args():
     parser.add_argument("-multi_process", action="store_true", default=True)
     parser.add_argument("-workers",    type=int,            default=3)
     parser.add_argument("-hangzhou",    action="store_true", default=False)
-    parser.add_argument("-jinan",       action="store_true", default=True)
+    parser.add_argument("-jinan",       action="store_true", default=False)
+    parser.add_argument("-newyork", action="store_true", default=True)
     return parser.parse_args()
 
 
@@ -35,6 +36,12 @@ def main(in_args=None):
                              "anon_3_4_jinan_real_2500.json"]
         num_rounds = 80
         template = "Jinan"
+    elif in_args.newyork:
+        count = 3600  #  3900
+        road_net = "28_7"
+        traffic_file_list = ["anon_28_7_newyork_real_double.json"]
+        num_rounds = 80
+        template = "NewYork"
 
     NUM_COL = int(road_net.split('_')[1])
     NUM_ROW = int(road_net.split('_')[0])
@@ -44,7 +51,7 @@ def main(in_args=None):
     process_list = []
     for traffic_file in traffic_file_list:
         dic_traffic_env_conf_extra = {
-            "OBS_LENGTH": 150,
+            "OBS_LENGTH": 167,
 
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,

@@ -15,12 +15,18 @@ import random
 
 class PressLightAgentOne(NetworkAgent):
     def build_network(self):
-        dic_input_node = {"feat1": Input(shape=(8,), name="input_cur_phase"),
-                          "feat2": Input(shape=(12,), name="input_feat2"),
-                          "feat3": Input(shape=(12,), name="input_feat3")}
+        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"]
+        dic_input_node = {}
+        for feat_name in used_feature:
+            if "cur_phase" in feat_name:
+                _shape = (8,)
+            else:
+                _shape = (12,)
+            dic_input_node[feat_name] = Input(shape=_shape, name="input_" + feat_name)
+
         # concatenate features
         list_all_flatten_feature = []
-        for feature_name in ["feat1", "feat2", "feat3"]:
+        for feature_name in used_feature:
             list_all_flatten_feature.append(dic_input_node[feature_name])
         all_flatten_feature = concatenate(list_all_flatten_feature, axis=1, name="all_flatten_feature")
         # shared dense layer
@@ -38,7 +44,7 @@ class PressLightAgentOne(NetworkAgent):
                 shared_dense, self.dic_agent_conf["D_DENSE"], self.num_actions, memo=phase_id)
             locals()["selector_{0}".format(phase_id)] = Selector(
                 phase_expansion, d_phase_encoding=8, d_action=self.num_actions,
-                name="selector_{0}".format(phase_id))(dic_input_node["feat1"])
+                name="selector_{0}".format(phase_id))(dic_input_node["cur_phase"])
             locals()["q_values_{0}_selected".format(phase_id)] = Multiply(name="multiply_{0}".format(phase_id))(
                 [locals()["q_values_{0}".format(phase_id)],
                  locals()["selector_{0}".format(phase_id)]]
@@ -47,7 +53,7 @@ class PressLightAgentOne(NetworkAgent):
         q_values = Add()(list_selected_q_values)
 
         network = Model(inputs=[dic_input_node[feature_name]
-                                for feature_name in ["feat1", "feat2", "feat3"]],
+                                for feature_name in used_feature],
                         outputs=q_values)
         network.compile(optimizer=Adam(lr=self.dic_agent_conf["LEARNING_RATE"]),
                         loss="mean_squared_error")
@@ -80,9 +86,9 @@ class PressLightAgentOne(NetworkAgent):
         print("memory samples number:", sample_size)
 
         # used_feature = ["phase_2", "phase_num_vehicle"]
-        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:3]
-        _state = [[], [], []]
-        _next_state = [[], [], []]
+        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"]
+        _state = [[] for _ in range(len(used_feature))]
+        _next_state = [[] for _ in range(len(used_feature))]
         _action = []
         _reward = []
         for i in range(len(sample_slice)):

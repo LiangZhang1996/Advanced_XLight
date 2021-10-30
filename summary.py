@@ -172,6 +172,6 @@ if __name__ == "__main__":
         "final_duration_std": [],
         "final_through": [],
     }
-    memo = "benchmark_1001"
-    summary_detail_RL(memo, copy.deepcopy(total_summary))
-    # summary_detail_conventional(memo)
+    memo = "benchmark_1018_15"
+    # summary_detail_RL(memo, copy.deepcopy(total_summary))
+    summary_detail_conventional(memo)
