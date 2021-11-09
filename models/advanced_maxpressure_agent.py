@@ -1,7 +1,6 @@
 """
-Efficient-Pressure agent.
-observation: [ traffic_movement_pressure_queue_efficient].
-Action: use greedy method select the phase with max value.
+Advanced-MaxPressure agent.
+observation: [ traffic_movement_pressure_queue_efficient, enter running part].
 """
 
 from .agent import Agent

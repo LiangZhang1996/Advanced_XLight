@@ -39,7 +39,6 @@ dic_traffic_env_conf = {
     "LIST_MODEL_NEED_TO_UPDATE": ["EfficientPressLight", "EfficientColight", "EfficientMPLight",
                                   "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"],
 
-    "EZ": 1,
     "FORGET_ROUND": 20,
     "RUN_COUNTS": 3600,
     "MODEL_NAME": None,
@@ -68,7 +67,7 @@ dic_traffic_env_conf = {
         "lane_num_vehicle_downstream",
         "traffic_movement_pressure_num",
         "traffic_movement_pressure_queue",
-        "traffic_movement_pressure_queue_adjusted",
+        "traffic_movement_pressure_queue_efficient",
         "pressure",
         "adjacency_matrix"
     ],

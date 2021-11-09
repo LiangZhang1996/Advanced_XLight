@@ -48,7 +48,6 @@ def main(in_args=None):
         deploy_dic_agent_conf = merge(getattr(config, "DIC_BASE_AGENT_CONF"), dic_agent_conf_extra)
 
         dic_traffic_env_conf_extra = {
-            "EZ": 2,
 
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,

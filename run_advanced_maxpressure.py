@@ -7,8 +7,8 @@ import argparse
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--memo",       type=str,               default='benchmark_1018_15')
-    parser.add_argument("-model",       type=str,               default="AdvancedPressure")
+    parser.add_argument("--memo",       type=str,               default='benchmark_1001')
+    parser.add_argument("-model",       type=str,               default="AdvancedMaxPressure")
     parser.add_argument("-eightphase", action="store_true",     default=False)
     parser.add_argument("-multi_process", action="store_true",  default=True)
     parser.add_argument("-workers",     type=int,               default=3)
@@ -60,9 +60,7 @@ def main(in_args):
             "ROADNET_FILE": "roadnet_{0}.json".format(road_net),
 
             "LIST_STATE_FEATURE": [
-
-                # "traffic_movement_pressure_queue_efficient",
-                "traffic_movement_pressure_queue_efficient_part",
+                "traffic_movement_pressure_queue_efficient",
                 "lane_enter_running_part",
                 "cur_phase",
             ],

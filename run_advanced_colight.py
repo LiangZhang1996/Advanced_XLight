@@ -16,7 +16,6 @@ def parse_args():
     parser.add_argument("-workers",    type=int,            default=3)
     parser.add_argument("-hangzhou",    action="store_true", default=False)
     parser.add_argument("-jinan",       action="store_true", default=True)
-    parser.add_argument("-newyork",      action="store_true", default=False)
     return parser.parse_args()
 
 
@@ -36,12 +35,6 @@ def main(in_args=None):
         num_rounds = 80
         template = "Jinan"
 
-    elif in_args.newyork:
-        count = 3600  #  3900
-        road_net = "28_7"
-        traffic_file_list = ["anon_28_7_newyork_real_double.json"]
-        num_rounds = 80
-        template = "NewYork"
 
     NUM_COL = int(road_net.split('_')[1])
     NUM_ROW = int(road_net.split('_')[0])
@@ -58,7 +51,7 @@ def main(in_args=None):
         dic_traffic_env_conf_extra = {
             "MIN_ACTION_TIME": 15,
             "MEASURE_TIME": 15,
-            "OBS_LENGTH": 167, # 11*15
+            "OBS_LENGTH": 167,  # 11*15
 
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,

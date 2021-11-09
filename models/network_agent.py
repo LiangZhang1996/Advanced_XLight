@@ -25,11 +25,6 @@ class NetworkAgent(Agent):
 
         self.Xs, self.Y = None, None
 
-        # EZ-greedy
-        self.n = 0
-        self.omega = None
-        self.ze = self.dic_traffic_env_conf["EZ"]
-
         if cnt_round == 0:
 
             if os.listdir(self.dic_path["PATH_TO_MODEL"]):

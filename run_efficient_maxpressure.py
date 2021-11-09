@@ -7,8 +7,8 @@ import argparse
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--memo",       type=str,               default='benchmark_1018_2')
-    parser.add_argument("-model",       type=str,               default="EfficientPressure")
+    parser.add_argument("--memo",       type=str,               default='benchmark_1001')
+    parser.add_argument("-model",       type=str,               default="EfficientMaxPressure")
     parser.add_argument("-eightphase", action="store_true",     default=False)
     parser.add_argument("-multi_process", action="store_true",  default=True)
     parser.add_argument("-workers",     type=int,               default=3)
@@ -42,7 +42,7 @@ def main(in_args):
 
     for traffic_file in traffic_file_list:
         dic_traffic_env_conf_extra = {
-            "OBS_LENGTH": 110,
+            "OBS_LENGTH": 167,
             "NUM_AGENTS": num_intersections,
             "NUM_INTERSECTIONS": num_intersections,
 
@@ -55,8 +55,7 @@ def main(in_args):
             "ROADNET_FILE": "roadnet_{0}.json".format(road_net),
 
             "LIST_STATE_FEATURE": [
-                # "traffic_movement_pressure_queue_efficient",
-                "lane_queue_part_in",
+                "traffic_movement_pressure_queue_efficient",
                 "cur_phase",
 
             ],

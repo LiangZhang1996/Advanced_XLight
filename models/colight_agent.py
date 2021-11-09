@@ -34,11 +34,6 @@ class CoLightAgent(Agent):
         self.len_feature = self._cal_len_feature()
         self.memory = build_memory()
 
-        # EZ-greedy
-        self.n = 0
-        self.omega = None  # persist actions
-        self.ze = self.dic_traffic_env_conf["EZ"]  # [ 0, 1, 2]
-
         if cnt_round == 0:
             # initialization
             self.q_network = self.build_network()
@@ -65,7 +60,6 @@ class CoLightAgent(Agent):
                         max(cnt_round - self.dic_agent_conf["UPDATE_Q_BAR_FREQ"], 0), self.intersection_id))
             except:
                 print("fail to load network, current round: {0}".format(cnt_round))
-
 
         decayed_epsilon = self.dic_agent_conf["EPSILON"] * pow(self.dic_agent_conf["EPSILON_DECAY"], cnt_round)
         self.dic_agent_conf["EPSILON"] = max(decayed_epsilon, self.dic_agent_conf["MIN_EPSILON"])
@@ -197,25 +191,6 @@ class CoLightAgent(Agent):
             action = np.random.randint(self.num_actions, size=len(q_values[0]))
         else:
             action = np.argmax(q_values[0], axis=1)
-        return action
-
-    def choose_action_map(self, count, states):
-        xs = self.convert_state_to_input(states)
-        q_values = self.q_network(xs)
-        # ez-greedy
-        if self.n == 0:
-            if random.random() <= self.dic_agent_conf["EPSILON"]:  # continue explore new Random Action
-                self.n = np.random.randint(self.ze)
-                self.omega = np.random.randint(self.num_actions, size=len(q_values[0]))
-                action = self.omega
-            # action = np.random.randint(len(q_values[0]), size=len(q_values))
-            else:
-                action = np.argmax(q_values[0], axis=1)
-        else:
-            assert self.omega is not None
-            action = self.omega
-            self.n -= 1
-
         return action
 
     @staticmethod
