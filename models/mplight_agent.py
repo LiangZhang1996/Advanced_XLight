@@ -108,7 +108,7 @@ class MPLightAgent(NetworkAgent):
         else:
             return [np.array([s[feature]]) for feature in self.dic_traffic_env_conf["LIST_STATE_FEATURE"]]
 
-    def choose_action_map(self, count, states):
+    def choose_action(self, count, states):
         dic_state_feature_arrays = {}  # {feature1: [inter1, inter2,..], feature2: [inter1, inter 2...]}
         used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:2]
         for feature_name in self.dic_traffic_env_conf["LIST_STATE_FEATURE"]:
@@ -130,39 +130,6 @@ class MPLightAgent(NetworkAgent):
             action = np.argmax(q_values, axis=1)
 
         return action
-
-    def choose_action(self, count, states):
-        dic_state_feature_arrays = {}  # {feature1: [inter1, inter2,..], feature2: [inter1, inter 2...]}
-        used_feature = self.dic_traffic_env_conf["LIST_STATE_FEATURE"][:2]
-        for feature_name in self.dic_traffic_env_conf["LIST_STATE_FEATURE"]:
-            dic_state_feature_arrays[feature_name] = []
-        for s in states:
-            for feature_name in self.dic_traffic_env_conf["LIST_STATE_FEATURE"]:
-                if feature_name == "cur_phase":
-                    dic_state_feature_arrays[feature_name].append(self.dic_traffic_env_conf['PHASE'][s[feature_name][0]])
-                else:
-                    dic_state_feature_arrays[feature_name].append(s[feature_name])
-        state_input = [np.array(dic_state_feature_arrays[feature_name]) for feature_name in
-                       used_feature]
-
-        q_values = self.q_network.predict(state_input)
-        # ez-greedy
-        if self.n == 0:
-
-            if random.random() <= self.dic_agent_conf["EPSILON"]:  # continue explore new Random Action
-                self.n = np.random.randint(self.ze)
-                self.omega = np.random.randint(len(q_values[0]), size=len(q_values))
-                action = self.omega
-            # action = np.random.randint(len(q_values[0]), size=len(q_values))
-            else:
-                action = np.argmax(q_values, axis=1)
-        else:
-            assert self.omega is not None
-            action = self.omega
-            self.n -= 1
-
-        return action
-
 
     def prepare_Xs_Y(self, memory):
         ind_end = len(memory)
