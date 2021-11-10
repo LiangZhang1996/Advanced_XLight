@@ -44,7 +44,6 @@ def main(in_args=None):
     process_list = []
     for traffic_file in traffic_file_list:
         dic_traffic_env_conf_extra = {
-            "EZ": 2,
 
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,
