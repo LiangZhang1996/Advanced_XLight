@@ -1,17 +1,48 @@
-## Introduction
+## 1 Introduction
 
-Code for article "Pressure  is enough for traffic light control".
+Code for article "Expression is enough: Improving traﬀic signal control with advanced traﬀic state representation".
 
-The code structure is based on  [MPLight](https://github.com/Chacha-Chen/MPLight.git).
+The code structure is based on  [Efficient_XLight](https://github.com/LiangZhang1996/Efficient_XLight.git).
 
-### Quick start
+## 2 Requirements
+`python3.6`,`tensorflow=2.4`, `cityflow`, `pandas`, `numpy`
 
-For the method in our article, run:
+[`cityflow`](https://github.com/cityflow-project/CityFlow.git) needs a linux environment, and we run the code on Manjaro Linux.
+
+## 3 Usage
+
+Parameters are well-prepared, and you can run the code directly.
+
+Our proposed method:
+- For `Advanced-MPLight`, run:
 ```shell
-python run_allpressure.py
+python run_advanced_mplight.py
+```
+- For `Advanced-CoLight`, run:
+```shell
+python run_advanced_colight.py
 ```
 
-For the baseline methods,
+- For `Advanced-MP`, run:
+```shell
+python run_advanced_maxpressure.py
+```
+
+
+For the baseline methods:
+
+- Efficient-PressLight
+```shell
+python run_efficient_presslight.py
+```
+- Efficient-CoLight
+```shell
+python run_efficient_colight.py
+```
+- Efficient-MPLight`
+```shell
+python run_efficient_mplight.py
+```
 - Fixed-Time
 ```shell
 python run_fixedtime.py
@@ -26,21 +57,20 @@ python run_presslight.py
 ```
 - MPLight
 ```shell
-python run_advanced_mplight.py
+python run_mplight.py
 ```
 - Colight
 ```shell
-python run_advanced_colight.py
+python run_colight.py
 ```
-## Rquirements
-`tensorflow=2.4`
-
-## Code explaination
-### structure
+## 4、Code details
+### 4.1、structure
 - `models`: contains all the models used in our article.
-- `utils`: contains all the methods to simulate and train the network.
+- `utils`: contains all the methods to simulate and train the models.
 
-### quto
+### 4.2、Reference
+
+The code is modified from [Efficient_XLight](https://github.com/LiangZhang1996/Efficient_XLight.git).
 The `Max-Pressure` is created by ourselves, based on [MaxPressure](https://www.sciencedirect.com/science/article/pii/S0968090X13001782) .
 - `PressLight`: Bsed on `LIT` model, which comes from [Colight](https://github.com/wingsweihua/colight.git).
 - `Colight` : Based on [Colight](https://github.com/wingsweihua/colight.git).
