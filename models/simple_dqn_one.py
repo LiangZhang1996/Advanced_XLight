@@ -2,8 +2,6 @@
 Simple DQN, with only two FC layers.
 .
 "One" means parameter sharing, Ape-X solution.
-Observations: [cur_phase, lane_num_vechile_in, lane_num_vehicle_out]
-Reward: -Pressure
 """
 
 from .network_agent import NetworkAgent, Selector

@@ -9,7 +9,7 @@ import os
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-memo",       type=str,           default='benchmark_1001')
-    parser.add_argument("-mod",        type=str,           default="AdvancedMPLight")
+    parser.add_argument("-mod",        type=str,           default="EfficientMPLight")
     parser.add_argument("-eightphase",  action="store_true", default=False)
     parser.add_argument("-gen",        type=int,            default=1)
     parser.add_argument("-multi_process", action="store_true", default=True)
@@ -44,22 +44,25 @@ def main(in_args=None):
     process_list = []
     for traffic_file in traffic_file_list:
         dic_traffic_env_conf_extra = {
+
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,
             "NUM_AGENTS": 1,
             "NUM_INTERSECTIONS": num_intersections,
             "RUN_COUNTS": count,
+
             "MODEL_NAME": in_args.mod,
             "NUM_ROW": NUM_ROW,
             "NUM_COL": NUM_COL,
+
             "TRAFFIC_FILE": traffic_file,
             "ROADNET_FILE": "roadnet_{0}.json".format(road_net),
             "TRAFFIC_SEPARATE": traffic_file,
             "LIST_STATE_FEATURE": [
                 "cur_phase",
-                "traffic_movement_pressure_queue_efficient",
-                "lane_enter_running_part",
+                "traffic_movement_pressure_num",
             ],
+
             "DIC_REWARD_INFO": {
                 "pressure": -0.25,
             },
@@ -67,15 +70,15 @@ def main(in_args=None):
 
         if in_args.eightphase:
             dic_traffic_env_conf_extra["PHASE"] = {
-                1: [0, 1, 0, 1, 0, 0, 0, 0],
-                2: [0, 0, 0, 0, 0, 1, 0, 1],
-                3: [1, 0, 1, 0, 0, 0, 0, 0],
-                4: [0, 0, 0, 0, 1, 0, 1, 0],
-                5: [1, 1, 0, 0, 0, 0, 0, 0],
-                6: [0, 0, 1, 1, 0, 0, 0, 0],
-                7: [0, 0, 0, 0, 0, 0, 1, 1],
-                8: [0, 0, 0, 0, 1, 1, 0, 0]
-            }
+                    1: [0, 1, 0, 1, 0, 0, 0, 0],
+                    2: [0, 0, 0, 0, 0, 1, 0, 1],
+                    3: [1, 0, 1, 0, 0, 0, 0, 0],
+                    4: [0, 0, 0, 0, 1, 0, 1, 0],
+                    5: [1, 1, 0, 0, 0, 0, 0, 0],
+                    6: [0, 0, 1, 1, 0, 0, 0, 0],
+                    7: [0, 0, 0, 0, 0, 0, 1, 1],
+                    8: [0, 0, 0, 0, 1, 1, 0, 0]
+                }
             dic_traffic_env_conf_extra["PHASE_LIST"] = ['WT_ET', 'NT_ST', 'WL_EL', 'NL_SL',
                                                         'WL_WT', 'EL_ET', 'SL_ST', 'NL_NT']
 

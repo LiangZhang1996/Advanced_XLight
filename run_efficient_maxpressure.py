@@ -42,7 +42,6 @@ def main(in_args):
 
     for traffic_file in traffic_file_list:
         dic_traffic_env_conf_extra = {
-            "OBS_LENGTH": 167,
             "NUM_AGENTS": num_intersections,
             "NUM_INTERSECTIONS": num_intersections,
 

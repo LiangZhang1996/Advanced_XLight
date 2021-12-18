@@ -35,7 +35,6 @@ def main(in_args=None):
         num_rounds = 80
         template = "Jinan"
 
-
     NUM_COL = int(road_net.split('_')[1])
     NUM_ROW = int(road_net.split('_')[0])
     num_intersections = NUM_ROW * NUM_COL
@@ -49,10 +48,6 @@ def main(in_args=None):
         deploy_dic_agent_conf = merge(getattr(config, "DIC_BASE_AGENT_CONF"), dic_agent_conf_extra)
 
         dic_traffic_env_conf_extra = {
-            "MIN_ACTION_TIME": 15,
-            "MEASURE_TIME": 15,
-            "OBS_LENGTH": 167,  # 11*15
-
             "NUM_ROUNDS": num_rounds,
             "NUM_GENERATORS": in_args.gen,
             "NUM_AGENTS": 1,
