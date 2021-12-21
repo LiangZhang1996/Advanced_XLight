@@ -1,6 +1,6 @@
 ## 1 Introduction
 
-Code for article "Expression is enough: Improving traﬀic signal control with advanced traﬀic state representation".
+Official code for article "Expression is enough: Improving traﬀic signal control with advanced traﬀic state representation".
 
 The code structure is based on  [Efficient_XLight](https://github.com/LiangZhang1996/Efficient_XLight.git).
 
@@ -78,3 +78,14 @@ The `Max-Pressure` is created by ourselves, based on [MaxPressure](https://www.s
 - `MPLight`: From [MPLight](https://github.com/Chacha-Chen/MPLight.git).
 
 If you use our method, please cite our article.
+```latex
+@misc{zhang2021expression,
+      title={Expression is enough: Improving traffic signal control with advanced traffic state representation}, 
+      author={Liang Zhang and Qiang Wu and Jun Shen and Linyuan Lü and Jianqing Wu and Bo Du},
+      year={2021},
+      eprint={2112.10107},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI}
+}
+
+```
