@@ -57,11 +57,19 @@ def summary_detail_RL(memo_rl, total_summary_rl):
                     df_vehicle_inter = pd.read_csv(os.path.join(round_dir, "vehicle_inter_{0}.csv".format(inter_index)),
                                                    sep=',', header=0, dtype={0: str, 1: float, 2: float},
                                                    names=["vehicle_id", "enter_time", "leave_time"])
+
+
                     # [leave_time_origin, leave_time, enter_time, duration]
                     df_vehicle_inter['leave_time_origin'] = df_vehicle_inter['leave_time']
                     df_vehicle_inter['leave_time'].fillna(run_counts, inplace=True)
                     df_vehicle_inter['duration'] = df_vehicle_inter["leave_time"].values - \
                                                    df_vehicle_inter["enter_time"].values
+                    tmp_idx = []
+                    for i, v in enumerate(df_vehicle_inter["vehicle_id"]):
+                        if "shadow" in v:
+                            tmp_idx.append(i)
+                    df_vehicle_inter.drop(df_vehicle_inter.index[tmp_idx], inplace=True)
+
                     ave_duration = df_vehicle_inter['duration'].mean(skipna=True)
                     print("------------- inter_index: {0}\tave_duration: {1}".format(inter_index, ave_duration))
                     df_vehicle_all.append(df_vehicle_inter)
@@ -139,6 +147,13 @@ def summary_detail_conventional(memo_cv):
                 df_vehicle_inter_0['leave_time'].fillna(run_counts, inplace=True)
                 df_vehicle_inter_0['duration'] = df_vehicle_inter_0["leave_time"].values - df_vehicle_inter_0[
                     "enter_time"].values
+
+                tmp_idx = []
+                for i, v in enumerate(df_vehicle_inter_0["vehicle_id"]):
+                    if "shadow" in v:
+                        tmp_idx.append(i)
+                df_vehicle_inter_0.drop(df_vehicle_inter_0.index[tmp_idx], inplace=True)
+
                 ave_duration = df_vehicle_inter_0['duration'].mean(skipna=True)
                 print("------------- inter_index: {0}\tave_duration: {1}".format(inter_id, ave_duration))
                 df_vehicle_all.append(df_vehicle_inter_0)
