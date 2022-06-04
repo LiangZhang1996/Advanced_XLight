@@ -63,6 +63,17 @@ python run_mplight.py
 ```shell
 python run_colight.py
 ```
+### 3.1 Newly added baseline
+We newly added two methods(AttendLight and PRGLight) as the basline.
+#### PRGLight
+The official code is avaliable at https://github.com/guang0123/PRGLight.git.
+#### AttendLight
+- For AttendLight, the officical code is not avaliable and we realized it according to their article. But, our-realized is not exactly the same as article described. We would like to run AttendLight in a DQN approach, but it is designed for Actor-Critic framework and cannot coverge under DQN framework. 
+- Through analysis, we find that the action-attention block cannot work well in DQN framework. Finally, we adopt the idea of AttentionLight(https://github.com/LiangZhang1996/AttentionLight.git)  and use self-attention to replace the action-attention block.
+- Our-realized AttenLight can converge and work well under all the datasets. It still retains the property as a universal model for any intersections. 
+- For fair comparison, AttendLight uses the same hyper-parameters with other methods.
+
+
 ## 4、Code details
 ### 4.1、structure
 - `models`: contains all the models used in our article.

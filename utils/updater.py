@@ -74,7 +74,7 @@ class Updater:
         start_time = time.time()
         print("Start load samples at", start_time)
         if self.dic_traffic_env_conf['MODEL_NAME'] in ["EfficientPressLight",  "EfficientMPLight",
-                                                       "AdvancedMPLight", "AdvancedDQN"]:
+                                                       "AdvancedMPLight", "AdvancedDQN", "Attend"]:
             sample_set_all = []
             for i in range(self.dic_traffic_env_conf['NUM_INTERSECTIONS']):
                 sample_set = self.load_sample_with_forget(i)

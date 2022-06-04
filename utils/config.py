@@ -7,6 +7,7 @@ from models.presslight_one import PressLightAgentOne
 from models.advanced_mplight_agent import AdvancedMPLightAgent
 from models.advanced_maxpressure_agent import AdvancedMaxPressureAgent
 from models.simple_dqn_one import SimpleDQNAgentOne
+from models.attendlight_agent import AttendLightAgent
 
 DIC_AGENTS = {
     "Fixedtime": FixedtimeAgent,
@@ -21,6 +22,7 @@ DIC_AGENTS = {
     "AdvancedMPLight": AdvancedMPLightAgent,
     "AdvancedColight": CoLightAgent,
     "AdvancedDQN": SimpleDQNAgentOne,
+    "Attend": AttendLightAgent
 }
 
 DIC_PATH = {
@@ -35,10 +37,12 @@ dic_traffic_env_conf = {
 
     "LIST_MODEL": ["Fixedtime",  "MaxPressure", "EfficientMaxPressure", "AdvancedMaxPressure",
                    "EfficientPressLight", "EfficientColight", "EfficientMPLight",
-                   "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"],
+                   "AdvancedMPLight", "AdvancedColight", "AdvancedDQN", "Attend"],
     "LIST_MODEL_NEED_TO_UPDATE": ["EfficientPressLight", "EfficientColight", "EfficientMPLight",
-                                  "AdvancedMPLight", "AdvancedColight", "AdvancedDQN"],
+                                  "AdvancedMPLight", "AdvancedColight", "AdvancedDQN", "Attend"],
 
+    "NUM_LANE": 12,
+    "PHASE_MAP": [[1, 4, 13, 16], [7, 10, 19, 22], [0, 3, 12, 15], [6, 9, 18, 21]],
     "FORGET_ROUND": 20,
     "RUN_COUNTS": 3600,
     "MODEL_NAME": None,

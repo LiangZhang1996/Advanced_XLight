@@ -24,6 +24,8 @@ class NetworkAgent(Agent):
         self.cnt_round = cnt_round
 
         self.Xs, self.Y = None, None
+        self.num_lane = dic_traffic_env_conf["NUM_LANE"]
+        self.phase_map = dic_traffic_env_conf["PHASE_MAP"]
 
         if cnt_round == 0:
 
