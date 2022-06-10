@@ -1,6 +1,6 @@
 ## 1 Introduction
 
-Official code for article "Expression is enough: Improving traﬀic signal control with advanced traﬀic state representation".
+Official code for article "Expression might be enough: representing pressure and demand for reinforcement learning based traffic signal control".
 
 The code structure is based on  [Efficient_XLight](https://github.com/LiangZhang1996/Efficient_XLight.git).
 

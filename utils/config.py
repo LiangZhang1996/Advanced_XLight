@@ -42,7 +42,7 @@ dic_traffic_env_conf = {
                                   "AdvancedMPLight", "AdvancedColight", "AdvancedDQN", "Attend"],
 
     "NUM_LANE": 12,
-    "PHASE_MAP": [[1, 4, 13, 16], [7, 10, 19, 22], [0, 3, 12, 15], [6, 9, 18, 21]],
+    "PHASE_MAP": [[1, 4, 12, 13, 14, 15, 16, 17], [7, 10, 18, 19, 20, 21, 22, 23], [0, 3, 18, 19, 20, 21, 22, 23], [6, 9, 12, 13, 14, 15, 16, 17]],
     "FORGET_ROUND": 20,
     "RUN_COUNTS": 3600,
     "MODEL_NAME": None,
