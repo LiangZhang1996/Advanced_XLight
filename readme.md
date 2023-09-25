@@ -1,6 +1,21 @@
 ## 1 Introduction
 
-Official code for article "Expression might be enough: representing pressure and demand for reinforcement learning based traffic signal control".
+Official code for the article "[Expression might be enough: representing pressure and demand for reinforcement learning based traffic signal control](https://proceedings.mlr.press/v162/zhang22ah/zhang22ah.pdf)".
+
+This article has been received by ICML 2022
+
+If you use our method, please cite our article.
+```latex
+@inproceedings{advanced_xlight,
+  title={Expression might be enough: representing pressure and demand for reinforcement learning based traffic signal control},
+  author={Zhang, Liang and Wu, Qiang and Shen, Jun and L{\"u}, Linyuan and Du, Bo and Wu, Jianqing},
+  booktitle={International Conference on Machine Learning},
+  pages={26645--26654},
+  year={2022},
+  organization={PMLR}
+}
+
+```
 
 The code structure is based on  [Efficient_XLight](https://github.com/LiangZhang1996/Efficient_XLight.git).
 
@@ -88,23 +103,4 @@ The `Max-Pressure` is created by ourselves, based on [MaxPressure](https://www.s
 - `Fixed-Time`: From [MPLight](https://github.com/Chacha-Chen/MPLight.git).
 - `MPLight`: From [MPLight](https://github.com/Chacha-Chen/MPLight.git).
 
-If you use our method, please cite our article.
-```latex
-@InProceedings{pmlr-v162-zhang22ah,
-  title = 	 {Expression might be enough: representing pressure and demand for reinforcement learning based traffic signal control},
-  author =       {Zhang, Liang and Wu, Qiang and Shen, Jun and L{\"u}, Linyuan and Du, Bo and Wu, Jianqing},
-  booktitle = 	 {Proceedings of the 39th International Conference on Machine Learning},
-  pages = 	 {26645--26654},
-  year = 	 {2022},
-  editor = 	 {Chaudhuri, Kamalika and Jegelka, Stefanie and Song, Le and Szepesvari, Csaba and Niu, Gang and Sabato, Sivan},
-  volume = 	 {162},
-  series = 	 {Proceedings of Machine Learning Research},
-  month = 	 {17--23 Jul},
-  publisher =    {PMLR},
-  pdf = 	 {https://proceedings.mlr.press/v162/zhang22ah/zhang22ah.pdf},
-  url = 	 {https://proceedings.mlr.press/v162/zhang22ah.html},
-  abstract = 	 {Many studies confirmed that a proper traffic state representation is more important than complex algorithms for the classical traffic signal control (TSC) problem. In this paper, we (1) present a novel, flexible and efficient method, namely advanced max pressure (Advanced-MP), taking both running and queuing vehicles into consideration to decide whether to change current signal phase; (2) inventively design the traffic movement representation with the efficient pressure and effective running vehicles from Advanced-MP, namely advanced traffic state (ATS); and (3) develop a reinforcement learning (RL) based algorithm template, called Advanced-XLight, by combining ATS with the latest RL approaches, and generate two RL algorithms, namely "Advanced-MPLight" and "Advanced-CoLight" from Advanced-XLight. Comprehensive experiments on multiple real-world datasets show that: (1) the Advanced-MP outperforms baseline methods, and it is also efficient and reliable for deployment; and (2) Advanced-MPLight and Advanced-CoLight can achieve the state-of-the-art.}
-}
 
-
-```
