@@ -103,4 +103,5 @@ The `Max-Pressure` is created by ourselves, based on [MaxPressure](https://www.s
 - `Fixed-Time`: From [MPLight](https://github.com/Chacha-Chen/MPLight.git).
 - `MPLight`: From [MPLight](https://github.com/Chacha-Chen/MPLight.git).
 
-
+## License
+This project is licensed under the GNU General Public License version 3 (GPLv3) - see the LICENSE file for details.
